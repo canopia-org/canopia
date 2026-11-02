@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Node
+node_modules/
+coverage/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Generated
+docs/build/
+*.log
+
+# Dati di lavoro (licenza del censimento non chiarita, D1 GAP1): si rigenerano con scripts/scarica_alberi.py
+data/

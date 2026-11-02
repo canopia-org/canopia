@@ -1,0 +1,758 @@
+openapi: 3.0.3
+info:
+  title: Canopia API
+  version: 0.1.0
+  description: |
+    API REST di Canopia (D3). Ogni operazione indica nel campo `x-feature` la feature del D2
+    e nel campo `x-ac` gli acceptance criteria che verifica.
+    Autenticazione: token JWT ottenuto da `POST /auth/login`, inviato come `Authorization: Bearer <token>`.
+servers:
+  - url: https://canopia-api.onrender.com/api/v1
+    description: Deploy di sviluppo (render.com)
+  - url: http://localhost:3000/api/v1
+    description: Locale
+
+tags:
+  - name: auth
+  - name: alberi
+  - name: percorsi
+  - name: benefici
+  - name: irrigazione
+  - name: interventi
+  - name: scenari
+  - name: segnalazioni
+  - name: adozioni
+  - name: utenti
+  - name: dati
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Registra un cittadino (profilo in attesa di conferma email)
+      x-feature: F10
+      x-ac: [AC-F10-01, AC-F10-03]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201': { description: Profilo creato in stato in_attesa }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { description: Email già registrata }
+  /auth/confirm:
+    post:
+      tags: [auth]
+      summary: Conferma l'email con il token ricevuto
+      x-feature: F10
+      x-ac: [AC-F10-02]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties: { token: { type: string } }
+      responses:
+        '200': { description: Profilo attivo }
+        '400': { description: Token non valido o scaduto }
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Accesso con email e password, restituisce un JWT (scadenza 24 h)
+      x-feature: F10
+      x-ac: [AC-F10-04]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        '200':
+          description: Accesso riuscito
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthToken' }
+        '401': { description: Credenziali non valide (messaggio generico) }
+
+  /alberi:
+    get:
+      tags: [alberi]
+      summary: Elenco e ricerca alberi (bbox pubblico; filtri avanzati solo tecnico)
+      x-feature: [F02, F05]
+      x-ac: [AC-F02-04, AC-F02-06, AC-F05-01, AC-F05-02, AC-F05-03]
+      security: [{}, { bearerAuth: [] }]
+      parameters:
+        - { name: bbox, in: query, schema: { type: string }, description: 'minLon,minLat,maxLon,maxLat' }
+        - { name: genere, in: query, schema: { type: string } }
+        - { name: specie, in: query, schema: { type: string } }
+        - { name: circoscrizione, in: query, schema: { type: string } }
+        - { name: tipologiaArea, in: query, schema: { type: string } }
+        - { name: altezzaMin, in: query, schema: { type: number } }
+        - { name: altezzaMax, in: query, schema: { type: number } }
+        - { name: annoImpiantoMin, in: query, schema: { type: integer } }
+        - { name: ggSenzaAcquaMin, in: query, schema: { type: integer } }
+        - { name: stato, in: query, schema: { type: string, enum: [vivo, abbattuto, non_piu_nel_censimento] } }
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/limit' }
+      responses:
+        '200':
+          description: Alberi corrispondenti
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totale: { type: integer }
+                  items: { type: array, items: { $ref: '#/components/schemas/AlberoSintesi' } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /alberi/interroga:
+    post:
+      tags: [alberi]
+      summary: Traduce una domanda in linguaggio naturale in filtri (non esegue la ricerca)
+      x-feature: F05
+      x-ac: [AC-F05-04, AC-F05-05, AC-F05-06, AC-F05-07]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [domanda]
+              properties: { domanda: { type: string, maxLength: 500 } }
+      responses:
+        '200':
+          description: Filtri interpretati da confermare
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FiltriInterpretati' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { description: 'Servizio AI non disponibile, usare i filtri manuali' }
+  /alberi/{codice}:
+    get:
+      tags: [alberi]
+      summary: Scheda albero con benefici stimati (storico e indice solo per tecnico)
+      x-feature: F02
+      x-ac: [AC-F02-01, AC-F02-02, AC-F02-03]
+      security: [{}, { bearerAuth: [] }]
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      responses:
+        '200':
+          description: Scheda
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AlberoDettaglio' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /alberi/{codice}/interventi:
+    get:
+      tags: [interventi]
+      summary: Storico e interventi pianificati di un albero
+      x-feature: F06
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      responses:
+        '200':
+          description: Interventi
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Intervento' } }
+    post:
+      tags: [interventi]
+      summary: Registra o pianifica un intervento
+      x-feature: F06
+      x-ac: [AC-F06-01, AC-F06-02, AC-F06-03, AC-F06-06]
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InterventoInput' }
+      responses:
+        '201':
+          description: Intervento creato
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Intervento' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /alberi/{codice}/annaffiature:
+    post:
+      tags: [irrigazione]
+      summary: Registra un'annaffiatura (cittadino o tecnico)
+      x-feature: F04
+      x-ac: [AC-F04-02, AC-F04-06]
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      responses:
+        '201': { description: 'Annaffiatura registrata, indice ricalcolato' }
+        '409': { description: Albero non giovane o annaffiatura troppo ravvicinata (BR17) }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /alberi/{codice}/adozioni:
+    post:
+      tags: [adozioni]
+      summary: Adotta un albero
+      x-feature: F09
+      x-ac: [AC-F09-03]
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      responses:
+        '201': { description: Adozione creata }
+        '409': { description: Limite di adozioni raggiunto o albero non giovane }
+    delete:
+      tags: [adozioni]
+      summary: Rinuncia all'adozione
+      x-feature: F09
+      x-ac: [AC-F09-04]
+      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      responses:
+        '204': { description: Adozione chiusa }
+
+  /interventi:
+    get:
+      tags: [interventi]
+      summary: Calendario degli interventi pianificati
+      x-feature: F06
+      x-ac: [AC-F06-04]
+      parameters:
+        - { name: squadra, in: query, schema: { type: string } }
+        - { name: dal, in: query, schema: { type: string, format: date } }
+        - { name: al, in: query, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: Interventi pianificati
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Intervento' } }
+  /interventi/{id}:
+    patch:
+      tags: [interventi]
+      summary: Segna un intervento come svolto o annullato
+      x-feature: F06
+      x-ac: [AC-F06-05]
+      parameters: [ { $ref: '#/components/parameters/id' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stato]
+              properties:
+                stato: { type: string, enum: [svolto, annullato] }
+                dataEsecuzione: { type: string, format: date }
+                esito: { type: string }
+      responses:
+        '200': { description: Intervento aggiornato }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /percorsi:
+    post:
+      tags: [percorsi]
+      summary: Calcola percorso più breve e più fresco (nessun dato salvato)
+      x-feature: F01
+      x-ac: [AC-F01-01, AC-F01-02, AC-F01-03, AC-F01-04, AC-F01-05, AC-F01-07, AC-F01-08, AC-F01-09]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PercorsoRequest' }
+      responses:
+        '200':
+          description: Risultato
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PercorsoResponse' }
+        '400': { description: 'Punti non validi (fuori Comune, coincidenti)' }
+
+  /benefici:
+    get:
+      tags: [benefici]
+      summary: Benefici aggregati per area e anno
+      x-feature: F03
+      x-ac: [AC-F03-01, AC-F03-02, AC-F03-03]
+      security: [{}, { bearerAuth: [] }]
+      parameters:
+        - { name: area, in: query, required: true, schema: { type: string }, description: "'citta' o codice circoscrizione" }
+        - { name: anno, in: query, schema: { type: integer } }
+        - { name: confrontaCon, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Indicatori
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BeneficiAggregati' }
+  /benefici/report:
+    get:
+      tags: [benefici]
+      summary: Esporta il report (solo pianificatore)
+      x-feature: F03
+      x-ac: [AC-F03-04, AC-F03-05]
+      parameters:
+        - { name: area, in: query, required: true, schema: { type: string } }
+        - { name: formato, in: query, schema: { type: string, enum: [csv, pdf] } }
+      responses:
+        '200':
+          description: File del report
+          content:
+            text/csv: {}
+            application/pdf: {}
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /irrigazione/priorita:
+    get:
+      tags: [irrigazione]
+      summary: Elenco degli alberi giovani da irrigare ordinato per indice
+      x-feature: F04
+      x-ac: [AC-F04-01, AC-F04-03, AC-F04-05]
+      parameters:
+        - { name: giorni, in: query, schema: { type: integer, enum: [1, 3], default: 3 } }
+        - { name: circoscrizione, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Elenco prioritario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meteoAggiornatoAl: { type: string, format: date-time }
+                  avvisoMeteoVecchio: { type: boolean }
+                  items: { type: array, items: { $ref: '#/components/schemas/PrioritaIrrigazione' } }
+
+  /mappe/livelli:
+    get:
+      tags: [scenari]
+      summary: Livelli calore, impermeabilità e copertura per quartiere
+      x-feature: F07
+      x-ac: [AC-F07-06]
+      responses:
+        '200': { description: 'Livelli con fonte, data e risoluzione' }
+  /aree-candidate:
+    get:
+      tags: [scenari]
+      summary: Classifica delle aree candidate alla piantumazione
+      x-feature: F07
+      x-ac: [AC-F07-04]
+      parameters: [ { $ref: '#/components/parameters/limit' } ]
+      responses:
+        '200': { description: Aree con punteggio e fattori }
+  /scenari:
+    get:
+      tags: [scenari]
+      summary: Scenari del pianificatore
+      x-feature: F07
+      responses:
+        '200': { description: Elenco scenari }
+    post:
+      tags: [scenari]
+      summary: Crea uno scenario e ne calcola i risultati
+      x-feature: F07
+      x-ac: [AC-F07-01, AC-F07-02, AC-F07-03, AC-F07-05, AC-F07-07]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScenarioInput' }
+      responses:
+        '201':
+          description: Scenario con risultati prima/dopo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scenario' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /scenari/{id}:
+    get:
+      tags: [scenari]
+      summary: Dettaglio scenario
+      x-feature: F07
+      parameters: [ { $ref: '#/components/parameters/id' } ]
+      responses:
+        '200': { description: Scenario }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [scenari]
+      summary: Elimina uno scenario
+      x-feature: F07
+      parameters: [ { $ref: '#/components/parameters/id' } ]
+      responses:
+        '204': { description: Eliminato }
+
+  /segnalazioni:
+    get:
+      tags: [segnalazioni]
+      summary: Segnalazioni (tecnico tutte, cittadino solo le proprie)
+      x-feature: F08
+      parameters:
+        - { name: stato, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Segnalazioni
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Segnalazione' } }
+    post:
+      tags: [segnalazioni]
+      summary: Invia una segnalazione con foto (triage automatico proposto)
+      x-feature: F08
+      x-ac: [AC-F08-01, AC-F08-02, AC-F08-05, AC-F08-06]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [testo, lat, lon]
+              properties:
+                testo: { type: string, maxLength: 1000 }
+                lat: { type: number }
+                lon: { type: number }
+                codiceAlbero: { type: string }
+                pericoloImmediato: { type: boolean }
+                foto: { type: array, maxItems: 3, items: { type: string, format: binary } }
+      responses:
+        '201':
+          description: Segnalazione creata (ricevuta o collegata)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Segnalazione' }
+        '413': { description: Foto troppo grande }
+  /segnalazioni/{id}:
+    patch:
+      tags: [segnalazioni]
+      summary: Conferma/corregge la proposta o cambia stato (tecnico)
+      x-feature: F08
+      x-ac: [AC-F08-03, AC-F08-04, AC-F08-07]
+      parameters: [ { $ref: '#/components/parameters/id' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoria: { type: string }
+                priorita: { type: string, enum: [bassa, media, alta] }
+                codiceAlbero: { type: string }
+                stato: { type: string, enum: [confermata, in_lavorazione, chiusa, respinta] }
+                motivazione: { type: string }
+      responses:
+        '200': { description: Segnalazione aggiornata }
+        '409': { description: Transizione di stato non ammessa (BR13) }
+
+  /notifiche:
+    get:
+      tags: [adozioni]
+      summary: Avvisi in-app dell'utente (es. albero adottato da annaffiare)
+      x-feature: F09
+      x-ac: [AC-F09-01, AC-F09-02]
+      responses:
+        '200': { description: Notifiche }
+
+  /utenti:
+    get:
+      tags: [utenti]
+      summary: Ricerca utenti (amministratore)
+      x-feature: F10
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+      responses:
+        '200': { description: Utenti }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [utenti]
+      summary: Crea un utente del Comune (amministratore)
+      x-feature: F10
+      responses:
+        '201': { description: Utente creato }
+  /utenti/{id}/ruolo:
+    put:
+      tags: [utenti]
+      summary: Assegna o revoca il ruolo
+      x-feature: F10
+      x-ac: [AC-F10-05, AC-F10-07, AC-F10-08]
+      parameters: [ { $ref: '#/components/parameters/id' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ruolo]
+              properties:
+                ruolo: { type: string, enum: [cittadino, tecnico, pianificatore, amministratore] }
+      responses:
+        '200': { description: Ruolo aggiornato }
+        '409': { description: Ultimo amministratore (BR19) }
+
+  /dati/importazioni:
+    get:
+      tags: [dati]
+      summary: Esiti delle ultime importazioni
+      x-feature: F11
+      x-ac: [AC-F11-03, AC-F11-04]
+      responses:
+        '200': { description: Log importazioni }
+    post:
+      tags: [dati]
+      summary: Avvia manualmente un'importazione (amministratore)
+      x-feature: F11
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fonte]
+              properties:
+                fonte: { type: string, enum: [censimento, meteo, rete, circoscrizioni] }
+      responses:
+        '202': { description: Importazione avviata }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    codice: { name: codice, in: path, required: true, schema: { type: string } }
+    id: { name: id, in: path, required: true, schema: { type: string } }
+    page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 50 } }
+  responses:
+    BadRequest:
+      description: Dati non validi
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Errore' }
+    Unauthorized: { description: Token mancante o non valido }
+    Forbidden: { description: Ruolo non autorizzato }
+    NotFound: { description: Risorsa non trovata }
+  schemas:
+    Errore:
+      type: object
+      properties:
+        codice: { type: string }
+        messaggio: { type: string }
+        campi: { type: array, items: { type: string } }
+    RegisterRequest:
+      type: object
+      required: [email, password, nome, cognome, privacyAccettata]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 10 }
+        nome: { type: string }
+        cognome: { type: string }
+        privacyAccettata: { type: boolean, enum: [true] }
+    AuthToken:
+      type: object
+      properties:
+        token: { type: string }
+        scadenza: { type: string, format: date-time }
+        ruolo: { type: string }
+        self: { type: string, example: /api/v1/utenti/123 }
+    Punto:
+      type: object
+      required: [lat, lon]
+      properties:
+        lat: { type: number }
+        lon: { type: number }
+    Stima:
+      type: object
+      properties:
+        valore: { type: number, nullable: true }
+        unita: { type: string }
+        modello: { type: string }
+        incertezzaPerc: { type: number }
+        stima: { type: boolean, enum: [true] }
+    AlberoSintesi:
+      type: object
+      properties:
+        self: { type: string, example: /api/v1/alberi/T-11920 }
+        codice: { type: string }
+        specie: { type: string }
+        posizione: { $ref: '#/components/schemas/Punto' }
+        stato: { type: string }
+    AlberoDettaglio:
+      allOf:
+        - $ref: '#/components/schemas/AlberoSintesi'
+        - type: object
+          properties:
+            nomeComune: { type: string }
+            nomeScientifico: { type: string }
+            descrizioneSpecie: { type: string }
+            altezza: { type: number }
+            diametroTronco: { type: number }
+            diametroChioma: { type: number }
+            tipologiaArea: { type: string }
+            circoscrizione: { type: string }
+            annoImpianto: { type: integer, nullable: true }
+            giovane: { type: boolean }
+            benefici:
+              type: object
+              nullable: true
+              properties:
+                co2Stoccata: { $ref: '#/components/schemas/Stima' }
+                co2AnnuaAssorbita: { $ref: '#/components/schemas/Stima' }
+                pmRimosso: { $ref: '#/components/schemas/Stima' }
+                areaOmbra: { $ref: '#/components/schemas/Stima' }
+                paragone: { type: string }
+            interventi: { type: string, description: link allo storico (solo tecnico) }
+            indiceStressIdrico: { $ref: '#/components/schemas/PrioritaIrrigazione' }
+    FiltriInterpretati:
+      type: object
+      properties:
+        filtri:
+          type: object
+          additionalProperties: false
+          properties:
+            genere: { type: string }
+            specie: { type: string }
+            circoscrizione: { type: string }
+            tipologiaArea: { type: string }
+            altezzaMin: { type: number }
+            altezzaMax: { type: number }
+            annoImpiantoMin: { type: integer }
+            ggSenzaAcquaMin: { type: integer }
+        nonRiconosciuti: { type: array, items: { type: string } }
+        scartati: { type: array, items: { type: string } }
+    Intervento:
+      type: object
+      properties:
+        self: { type: string }
+        albero: { type: string }
+        tipo: { type: string, enum: [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione] }
+        stato: { type: string, enum: [pianificato, svolto, annullato] }
+        dataPrevista: { type: string, format: date }
+        dataEsecuzione: { type: string, format: date }
+        esito: { type: string }
+        squadra: { type: string }
+        autore: { type: string }
+    InterventoInput:
+      type: object
+      required: [tipo, stato]
+      properties:
+        tipo: { type: string, enum: [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione] }
+        stato: { type: string, enum: [pianificato, svolto] }
+        dataPrevista: { type: string, format: date }
+        squadra: { type: string }
+        dataEsecuzione: { type: string, format: date }
+        esito: { type: string }
+        nuovoAlbero:
+          type: object
+          description: solo per nuova_piantumazione
+          properties:
+            specie: { type: string }
+            posizione: { $ref: '#/components/schemas/Punto' }
+    PercorsoRequest:
+      type: object
+      required: [partenza, arrivo]
+      properties:
+        partenza: { $ref: '#/components/schemas/Punto' }
+        arrivo: { $ref: '#/components/schemas/Punto' }
+        mezzo: { type: string, enum: [piedi, bici], default: piedi }
+        orario: { type: string, format: date-time }
+        tolleranzaPerc: { type: number, minimum: 0, maximum: 50, default: 20 }
+    Percorso:
+      type: object
+      properties:
+        geometria: { type: object, description: GeoJSON LineString }
+        lunghezzaM: { type: number }
+        tempoMin: { type: number }
+        ombraPerc: { type: number, minimum: 0, maximum: 100 }
+    PercorsoResponse:
+      type: object
+      properties:
+        breve: { $ref: '#/components/schemas/Percorso' }
+        fresco: { type: object, allOf: [ { $ref: '#/components/schemas/Percorso' } ], nullable: true }
+        ombraCalcolata: { type: boolean }
+        messaggio: { type: string }
+        indiceCalore: { type: number, nullable: true }
+        suggerisciFresco: { type: boolean }
+        spiegazione: { type: string, nullable: true }
+        puntiUtili: { type: array, items: { type: object } }
+    BeneficiAggregati:
+      type: object
+      properties:
+        area: { type: string }
+        anno: { type: integer }
+        numeroAlberi: { type: integer }
+        coperturaChiomaPerc: { $ref: '#/components/schemas/Stima' }
+        co2Stoccata: { $ref: '#/components/schemas/Stima' }
+        co2AnnuaAssorbita: { $ref: '#/components/schemas/Stima' }
+        pmRimosso: { $ref: '#/components/schemas/Stima' }
+        confronto: { type: object, nullable: true }
+    PrioritaIrrigazione:
+      type: object
+      properties:
+        albero: { type: string }
+        indice: { type: number, minimum: 0, maximum: 100 }
+        fattori:
+          type: object
+          properties:
+            ggSenzaPioggia: { type: integer }
+            ggSenzaAcqua: { type: integer }
+            tMax: { type: number }
+            anniDaImpianto: { type: integer }
+        rinviabile: { type: boolean }
+    ScenarioInput:
+      type: object
+      required: [nome, area]
+      properties:
+        nome: { type: string }
+        area: { type: object, description: GeoJSON Polygon }
+        alberiVirtuali:
+          type: array
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              specie: { type: string }
+              posizione: { $ref: '#/components/schemas/Punto' }
+              altezzaMaturita: { type: number }
+              chiomaMaturita: { type: number }
+        alberiRimossi: { type: array, items: { type: string } }
+    Scenario:
+      allOf:
+        - $ref: '#/components/schemas/ScenarioInput'
+        - type: object
+          properties:
+            self: { type: string }
+            risultati:
+              type: object
+              properties:
+                ombra:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      ora: { type: integer, enum: [11, 14, 17] }
+                      primaPerc: { type: number }
+                      dopoPerc: { type: number }
+                benefici: { type: object }
+                sintesi: { type: string, nullable: true }
+    Segnalazione:
+      type: object
+      properties:
+        self: { type: string }
+        testo: { type: string }
+        foto: { type: array, items: { type: string } }
+        posizione: { $ref: '#/components/schemas/Punto' }
+        albero: { type: string, nullable: true }
+        categoria: { type: string }
+        priorita: { type: string }
+        categoriaConfermata: { type: boolean }
+        stato: { type: string, enum: [ricevuta, collegata, confermata, in_lavorazione, chiusa, respinta] }
+        collegataA: { type: string, nullable: true }
+        storicoStati: { type: array, items: { type: object } }

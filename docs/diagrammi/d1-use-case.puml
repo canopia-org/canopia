@@ -1,0 +1,68 @@
+@startuml d1-use-case
+left to right direction
+skinparam packageStyle rectangle
+
+actor Cittadino
+actor "Cittadino registrato" as Reg
+actor "Tecnico del verde" as Tec
+actor Pianificatore as Pian
+actor Amministratore as Admin
+actor "Servizio AI\n(LLM, visione)" as AI <<system>>
+actor "Fonti dati\n(Comune, Meteo, OSM)" as Fonti <<system>>
+actor "SensorTrento" as ST <<system>>
+actor Scheduler <<system>>
+
+Reg --|> Cittadino
+
+rectangle Canopia {
+  usecase "UC-01 Calcolare percorso all'ombra" as UC01
+  usecase "Calcolare ombra sui tratti" as UC_O
+  usecase "UC-02 Consultare scheda albero" as UC02
+  usecase "UC-06 Consultare benefici ecosistemici" as UC06
+  usecase "Stimare benefici" as UC_B
+  usecase "UC-16 Registrarsi e accedere" as UC16
+  usecase "UC-03 Inviare segnalazione" as UC03
+  usecase "UC-04 Registrare annaffiatura" as UC04
+  usecase "UC-05 Adottare un albero" as UC05
+  usecase "UC-07 Simulare scenario di piantumazione" as UC07
+  usecase "UC-10 Filtrare alberi" as UC10
+  usecase "UC-14 Interrogare in linguaggio naturale" as UC14
+  usecase "UC-11 Pianificare irrigazione" as UC11
+  usecase "Calcolare indice di stress idrico" as UC_W
+  usecase "UC-12 Registrare / pianificare interventi" as UC12
+  usecase "UC-13 Gestire segnalazioni" as UC13
+  usecase "UC-15 Gestire utenti e ruoli" as UC15
+  usecase "UC-09 Aggiornare dati dalle fonti" as UC09
+}
+
+Cittadino --> UC01
+Cittadino --> UC02
+Cittadino --> UC06
+Cittadino --> UC16
+Reg --> UC03
+Reg --> UC04
+Pian --> UC06
+Pian --> UC07
+Tec --> UC10
+Tec --> UC11
+Tec --> UC12
+Tec --> UC13
+Admin --> UC15
+Scheduler --> UC09
+
+UC01 ..> UC_O : <<include>>
+UC07 ..> UC_O : <<include>>
+UC07 ..> UC_B : <<include>>
+UC06 ..> UC_B : <<include>>
+UC11 ..> UC_W : <<include>>
+UC14 ..> UC10 : <<extend>>
+UC05 ..> UC04 : <<extend>>
+
+UC01 -- AI
+UC07 -- AI
+UC14 -- AI
+UC03 -- AI
+UC13 -- AI
+UC03 -- ST
+UC09 -- Fonti
+@enduml

@@ -1,0 +1,14 @@
+@startuml d2-state-segnalazione
+hide empty description
+[*] --> Ricevuta : invio cittadino
+Ricevuta --> Collegata : duplicato (BR14)
+Ricevuta --> Confermata : tecnico conferma/corregge
+Ricevuta --> Respinta : tecnico respinge
+Confermata --> InLavorazione : intervento pianificato
+Confermata --> Respinta : tecnico respinge
+InLavorazione --> Chiusa : intervento svolto
+Collegata --> [*]
+Chiusa --> [*]
+Respinta --> [*]
+state "In lavorazione" as InLavorazione
+@enduml

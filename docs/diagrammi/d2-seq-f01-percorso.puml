@@ -1,0 +1,28 @@
+@startuml d2-seq-f01-percorso
+actor Cittadino
+participant "Canopia" as S
+participant "Servizio AI" as AI
+Cittadino -> S : partenza, arrivo, mezzo, orario, tolleranza
+S -> S : valida punti (nel Comune, distinti)
+alt punto non valido
+  S --> Cittadino : errore (ALT3/ALT4)
+else punti validi
+  S -> S : posizione del sole (BR2)
+  alt sole sotto l'orizzonte
+    S -> S : percorso più breve
+    S --> Cittadino : solo più breve + "ombra non calcolata" (ALT1)
+  else giorno
+    S -> S : frazione d'ombra dei tratti (BR1)
+    S -> S : percorso più breve e più fresco (BR3, BR8)
+    S -> S : verifica miglioramento ≥ soglia (BR9)
+    S -> S : indice di calore previsto (BR6)
+    S -> AI : confronto numerico dei due percorsi
+    alt AI risponde
+      AI --> S : spiegazione testuale
+    else AI non disponibile
+      S -> S : nessuna spiegazione (ALT5)
+    end
+    S --> Cittadino : due percorsi, % ombra, indice di calore, spiegazione
+  end
+end
+@enduml

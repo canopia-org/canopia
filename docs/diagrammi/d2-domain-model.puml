@@ -1,0 +1,119 @@
+@startuml d2-domain-model
+hide circle
+skinparam classAttributeIconSize 0
+
+class Albero {
+  codice
+  altezza
+  diametroTronco
+  diametroChioma
+  tipologiaArea
+  posizione
+  annoImpianto [0..1]
+  servitoDaImpianto
+  stato
+  giovane() : bool
+}
+class Specie {
+  nomeScientifico
+  nomeComune
+  genere
+  descrizione
+  coefficienti
+}
+class StimaBenefici {
+  co2Stoccata
+  co2AnnuaAssorbita
+  pmRimosso
+  areaOmbra
+  modello
+  incertezza
+}
+class IndiceStressIdrico {
+  valore
+  fattori
+  rinviabile
+  dataCalcolo
+}
+class Intervento {
+  tipo
+  stato
+  dataPrevista
+  dataEsecuzione
+  esito
+}
+class Annaffiatura {
+  data
+  origine
+}
+class Segnalazione {
+  foto
+  testo
+  posizione
+  categoria
+  priorita
+  stato
+  propostaAutomatica
+}
+class Scenario {
+  nome
+  area
+  risultati
+}
+class AlberoVirtuale {
+  posizione
+  altezzaMaturita
+  chiomaMaturita
+}
+class Utente {
+  email
+  nome
+  ruolo
+  stato
+}
+class Adozione {
+  dataInizio
+  attiva
+}
+class Squadra {
+  nome
+}
+class Circoscrizione {
+  nome
+  confine
+}
+class TrattoStradale {
+  geometria
+  lunghezza
+  tipo
+}
+class DatoMeteo {
+  istante
+  temperatura
+  umidita
+  pioggia
+  tipo
+  fonte
+}
+
+Albero "*" --> "1" Specie
+Albero "*" --> "1" Circoscrizione
+Albero "1" *-- "0..1" StimaBenefici
+Albero "1" *-- "0..1" IndiceStressIdrico
+Albero "1" *-- "*" Intervento
+Albero "1" *-- "*" Annaffiatura
+Albero "0..1" -- "*" Segnalazione
+Segnalazione "*" --> "0..1" Segnalazione : collegataA
+Intervento "*" --> "0..1" Squadra
+Intervento "*" --> "1" Utente : autore
+Annaffiatura "*" --> "1" Utente : autore
+Segnalazione "*" --> "1" Utente : autore
+Utente "1" -- "*" Adozione
+Adozione "*" --> "1" Albero
+Scenario "*" --> "1" Utente : pianificatore
+Scenario "1" *-- "*" AlberoVirtuale
+Scenario "*" --> "*" Albero : rimossi
+AlberoVirtuale "*" --> "1" Specie
+TrattoStradale "*" --> "0..1" Circoscrizione
+IndiceStressIdrico ..> DatoMeteo : usa
+@enduml

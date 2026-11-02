@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canopia – Mockup</title>
+<style>
+  :root{--ink:#14322A;--leaf:#2F7D4F;--leaf2:#5FA96E;--mint:#E3F0E2;--cream:#F6F4EE;--card:#FFFFFF;--line:#DCE3DA;
+        --muted:#5E6E67;--sun:#E08A1E;--hot:#C2412D;--mid:#D9A21B;--ok:#2F7D4F;--shade:#1F5E3A;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#E9ECE6;color:var(--ink);padding:28px 20px}
+  h1{text-align:center;font-size:22px;margin-bottom:4px}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:26px}
+  .screen{margin:0 auto 34px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .label{font-weight:700;font-size:15px}
+  .label small{font-weight:400;color:var(--muted)}
+  .logo{font-weight:800;font-size:19px;letter-spacing:.2px;display:flex;align-items:center;gap:7px}
+  .logo i{width:22px;height:22px;border-radius:50% 50% 50% 4px;background:var(--leaf);display:inline-block;transform:rotate(-45deg)}
+  .logo span{color:var(--leaf)}
+  .chip{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 10px;font-size:12px}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;color:#fff}
+  .hot{background:var(--hot)} .mid{background:var(--mid)} .ok{background:var(--ok)} .grey{background:#8A968F}
+  .est{font-size:10px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px}
+  .ai{background:#fff;border-left:4px solid var(--leaf);border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.45}
+  .ai b{color:var(--leaf)}
+  .btn{display:inline-block;background:var(--leaf);color:#fff;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;text-align:center}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .muted{color:var(--muted)}
+
+  /* phone */
+  .phone{width:370px;height:780px;background:var(--cream);border:10px solid #1b1b1b;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+  .status{height:28px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:12px;font-weight:600}
+  .ptop{padding:6px 16px 8px;display:flex;justify-content:space-between;align-items:center}
+  .heat{font-size:11px;font-weight:700;color:var(--hot);background:#FBE7E2;border-radius:8px;padding:4px 8px;text-align:right;line-height:1.25}
+  .pcontent{flex:1;padding:0 14px 10px;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+  .field{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px;display:flex;flex-direction:column;gap:6px}
+  .field .r{display:flex;gap:8px;align-items:center}
+  .field .d{width:9px;height:9px;border-radius:50%}
+  .field hr{border:0;border-top:1px solid var(--line)}
+  .map{border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .cmp{display:flex;gap:8px}
+  .cmp .c{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px;font-size:12px;display:flex;flex-direction:column;gap:3px}
+  .cmp .c.best{border:2px solid var(--leaf);background:#F3FAF2}
+  .cmp .big{font-size:20px;font-weight:800}
+  .bar{height:6px;border-radius:3px;background:#F0D9C5;overflow:hidden}
+  .bar div{height:100%;background:var(--shade)}
+  .slider{font-size:12px;display:flex;align-items:center;gap:8px}
+  .slider .t{flex:1;height:4px;background:var(--line);border-radius:2px;position:relative}
+  .slider .t div{position:absolute;left:0;top:0;height:4px;width:40%;background:var(--leaf);border-radius:2px}
+  .slider .t i{position:absolute;left:40%;top:-6px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--leaf);margin-left:-8px}
+  .nav{height:54px;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;font-size:11px;color:var(--muted);background:#fff}
+  .nav .on{color:var(--leaf);font-weight:700}
+
+  /* desktop */
+  .desk{width:1180px;height:720px;background:var(--cream);border-radius:12px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.16);display:flex;flex-direction:column;border:1px solid #cfd5cc}
+  .chrome{height:30px;background:#E3E6E0;display:flex;align-items:center;gap:6px;padding:0 12px}
+  .chrome i{width:10px;height:10px;border-radius:50%;background:#C9CEC6;display:inline-block}
+  .chrome span{margin-left:12px;background:#fff;border-radius:6px;font-size:11px;color:var(--muted);padding:3px 12px;width:360px}
+  .dbody{flex:1;display:flex;overflow:hidden}
+  .side{width:190px;background:var(--ink);color:#DDE8E0;padding:16px 12px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+  .side .logo{color:#fff;margin-bottom:14px}
+  .side .logo span{color:#8FD19E}
+  .side div.it{padding:8px 10px;border-radius:8px;display:flex;justify-content:space-between}
+  .side div.it.on{background:rgba(255,255,255,.12);color:#fff;font-weight:700}
+  .side .n{background:var(--hot);color:#fff;border-radius:10px;font-size:11px;padding:0 6px;font-weight:700}
+  .side .role{margin-top:auto;font-size:11px;color:#9FB5A8;border-top:1px solid rgba(255,255,255,.15);padding-top:10px}
+  .main{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+  .nl{background:#fff;border:1.5px solid var(--ink);border-radius:12px;padding:9px 12px;font-size:13px;display:flex;flex-direction:column;gap:7px}
+  .nl .q{display:flex;gap:8px;align-items:center}
+  .nl .q b{color:var(--leaf)}
+  .nl .f{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+  .grid{flex:1;display:flex;gap:12px;overflow:hidden}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+  .panel h3{font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th{text-align:left;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);padding:5px 4px}
+  td{border-bottom:1px solid #EEF1EC;padding:6px 4px;vertical-align:middle}
+  .idx{display:inline-block;width:34px;text-align:center;font-weight:800;border-radius:6px;color:#fff;padding:2px 0}
+  .kpis{display:flex;gap:10px}
+  .kpi{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;display:flex;flex-direction:column;gap:3px}
+  .kpi .v{font-size:19px;font-weight:800}
+  .kpi .v s{color:var(--muted);font-weight:500;font-size:14px;text-decoration:none}
+  .kpi .d{color:var(--leaf);font-weight:700}
+  .legend{display:flex;gap:12px;font-size:11px;color:var(--muted);align-items:center;flex-wrap:wrap}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+
+  .notes{max-width:1180px;margin:0 auto;background:#fff;border-radius:12px;padding:16px 22px;font-size:13.5px;line-height:1.5}
+  .notes h2{font-size:15px;margin-bottom:6px}
+  .notes li{margin-left:18px}
+
+  /* single-screen export: d1-mockup.html#s1 … #s7 */
+  body.single{padding:24px;background:#E9ECE6}
+  body.single h1,body.single .sub,body.single .notes{display:none}
+  body.single .screen{display:none;margin:0}
+  body.single .screen.show{display:flex}
+  body.single .screen:has(.phone) .label{max-width:400px;text-align:center}
+</style>
+</head>
+<body>
+<h1>Canopia – Mockup delle schermate principali</h1>
+<p class="sub">Wireframe a media fedeltà · dati, nomi e valori sono di esempio · riferimenti a RF/US del D1</p>
+
+<!-- ============ SCREEN 1: CITTADINO – PERCORSO FRESCO ============ -->
+<section class="screen" id="s1">
+  <div class="label">1 · Cittadino – Percorso all'ombra <small>(MU-Fig.1 · UC-01 · US-01 · RF14–RF17)</small></div>
+  <div class="phone">
+    <div class="status"><span>14:02</span><span>●●● 5G ▮</span></div>
+    <div class="ptop">
+      <div class="logo"><i></i><b>Canopia</b></div>
+      <div class="heat">☀ 34 °C percepiti<br><span style="font-weight:500">calore alto alle 14</span></div>
+    </div>
+    <div class="pcontent">
+      <div class="field">
+        <div class="r"><span class="d" style="background:var(--ink)"></span>Via Giusti, San Giuseppe</div>
+        <hr>
+        <div class="r"><span class="d" style="background:var(--hot)"></span>Piazza Duomo</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="chip on">🚶 A piedi</span><span class="chip">🚲 Bici</span><span class="chip">🕑 Parti ora</span>
+      </div>
+
+      <div class="map">
+        <svg viewBox="0 0 340 230" width="100%" height="230" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="230" fill="#EEF0EA"/>
+          <!-- blocks -->
+          <g fill="#E1E3DC">
+            <rect x="10" y="10" width="80" height="55" rx="3"/><rect x="110" y="10" width="95" height="55" rx="3"/><rect x="225" y="10" width="105" height="55" rx="3"/>
+            <rect x="10" y="85" width="80" height="60" rx="3"/><rect x="225" y="85" width="105" height="60" rx="3"/>
+            <rect x="10" y="165" width="80" height="55" rx="3"/><rect x="110" y="165" width="95" height="55" rx="3"/><rect x="225" y="165" width="105" height="55" rx="3"/>
+          </g>
+          <rect x="110" y="85" width="95" height="60" rx="3" fill="#CFE5CB"/>
+          <text x="157" y="119" font-size="9" text-anchor="middle" fill="#4C7A52">Parco</text>
+          <!-- streets -->
+          <g stroke="#fff" stroke-width="12" fill="none"><path d="M0 75H340M0 155H340M100 0V230M215 0V230"/></g>
+          <!-- shade patches -->
+          <g fill="#2F7D4F" opacity=".22">
+            <ellipse cx="100" cy="40" rx="9" ry="16"/><ellipse cx="100" cy="100" rx="9" ry="18"/><ellipse cx="100" cy="135" rx="9" ry="14"/>
+            <ellipse cx="150" cy="155" rx="16" ry="8"/><ellipse cx="185" cy="155" rx="16" ry="8"/><ellipse cx="240" cy="155" rx="14" ry="8"/><ellipse cx="290" cy="155" rx="14" ry="8"/>
+          </g>
+          <!-- trees -->
+          <g fill="#2F7D4F"><circle cx="94" cy="40" r="4"/><circle cx="94" cy="100" r="4"/><circle cx="94" cy="135" r="4"/>
+            <circle cx="150" cy="149" r="4"/><circle cx="185" cy="149" r="4"/><circle cx="240" cy="149" r="4"/><circle cx="290" cy="149" r="4"/></g>
+          <!-- shortest route (sun) -->
+          <path d="M30 210V75H310V40" stroke="#E08A1E" stroke-width="4" stroke-dasharray="6 5" fill="none" stroke-linecap="round"/>
+          <!-- cool route -->
+          <path d="M30 210V200H100V155H310V40" stroke="#1F5E3A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="30" cy="210" r="6" fill="#14322A" stroke="#fff" stroke-width="2"/>
+          <circle cx="310" cy="40" r="7" fill="#C2412D" stroke="#fff" stroke-width="2"/>
+          <!-- sun -->
+          <g transform="translate(316 206)"><circle r="8" fill="#F2B544"/><text x="-26" y="4" font-size="9" fill="#8A6A2A" text-anchor="end">sole da SO</text></g>
+        </svg>
+      </div>
+
+      <div class="cmp">
+        <div class="c">
+          <div class="muted" style="font-weight:700;color:var(--sun)">— — Più breve</div>
+          <div class="big">20 min</div>
+          <div class="muted">1,6 km</div>
+          <div class="bar"><div style="width:18%"></div></div>
+          <div>18 % all'ombra</div>
+        </div>
+        <div class="c best">
+          <div style="font-weight:700;color:var(--shade)">━ Più fresco ✓</div>
+          <div class="big">23 min</div>
+          <div class="muted">1,8 km · +3 min</div>
+          <div class="bar"><div style="width:71%"></div></div>
+          <div><b>71 % all'ombra</b></div>
+        </div>
+      </div>
+
+      <div class="slider"><span>Allungo max</span><div class="t"><div></div><i></i></div><b>+20 %</b></div>
+
+      <div class="ai"><b>Perché questo percorso:</b> con 3 minuti in più passi lungo il viale alberato di Corso 3 Novembre, all'ombra di 14 tigli. Il tratto più esposto è Via Giusti (200 m al sole).</div>
+      <div class="btn">Avvia il percorso</div>
+    </div>
+    <div class="nav"><span class="on">🧭<br>Percorsi</span><span>🌳<br>Alberi</span><span>🏘<br>Quartiere</span><span>👤<br>Profilo</span></div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 2: TECNICO – DASHBOARD ============ -->
+<section class="screen" id="s2">
+  <div class="label">2 · Tecnico del verde – Dashboard irrigazione e segnalazioni <small>(MU-Fig.2 · UC-10, UC-11, UC-13, UC-14 · US-02, US-04, US-07 · RF2, RF5–RF7, RF21)</small></div>
+  <div class="desk">
+    <div class="chrome"><i></i><i></i><i></i><span>canopia.comune.trento.it/backoffice</span></div>
+    <div class="dbody">
+      <div class="side">
+        <div class="logo"><i></i><b>Canopia</b></div>
+        <div class="it">🗺 Mappa alberi</div>
+        <div class="it on">💧 Da irrigare</div>
+        <div class="it">⚠ Segnalazioni <span class="n">7</span></div>
+        <div class="it">🛠 Interventi</div>
+        <div class="it">📅 Calendario squadre</div>
+        <div class="it">🌱 Scenari</div>
+        <div class="it">📊 Benefici</div>
+        <div class="role">Marco R. · Tecnico<br>Ufficio Verde e Parchi</div>
+      </div>
+      <div class="main">
+        <div class="nl">
+          <div class="q"><b>✦ Chiedi</b><span>aceri piantati da meno di 3 anni in Centro storico – Piedicastello senza acqua da 10 giorni</span></div>
+          <div class="f"><span class="muted">Ho capito:</span>
+            <span class="chip">Genere = <b>Acer</b></span><span class="chip">Impianto ≥ <b>2023</b></span>
+            <span class="chip">Circoscrizione = <b>Centro storico – Piedicastello</b></span><span class="chip">Ultima annaffiatura &gt; <b>10 gg</b></span>
+            <span class="btn" style="padding:4px 12px;font-size:12px">Esegui</span><span class="btn ghost" style="padding:4px 12px;font-size:12px">Modifica</span>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel" style="flex:1.05">
+            <h3>Mappa stress idrico – alberi giovani <span class="legend"><span><span class="dot" style="background:var(--hot)"></span>alto</span><span><span class="dot" style="background:var(--mid)"></span>medio</span><span><span class="dot" style="background:var(--ok)"></span>basso</span></span></h3>
+            <svg viewBox="0 0 440 470" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="border-radius:8px;background:#EEF0EA;min-height:0">
+              <rect width="440" height="470" fill="#EEF0EA"/>
+              <path d="M300 0C280 120 330 230 290 340S310 470 300 470H440V0Z" fill="#D7E6EE"/>
+              <text x="380" y="240" font-size="11" fill="#6B8B9C">Adige</text>
+              <g stroke="#fff" stroke-width="10" fill="none"><path d="M0 120H290M0 260H300M0 380H295M90 0V470M200 0V470"/></g>
+              <rect x="110" y="140" width="70" height="100" rx="4" fill="#CFE5CB"/>
+              <path d="M10 60L160 50L260 90L270 330L150 420L20 400Z" fill="none" stroke="#14322A" stroke-width="1.5" stroke-dasharray="5 4"/>
+              <text x="20" y="40" font-size="10" fill="#14322A">Centro storico – Piedicastello</text>
+              <g>
+                <circle cx="60" cy="110" r="7" fill="#C2412D"/><circle cx="95" cy="200" r="7" fill="#C2412D"/><circle cx="150" cy="255" r="7" fill="#C2412D"/>
+                <circle cx="230" cy="130" r="7" fill="#D9A21B"/><circle cx="210" cy="300" r="7" fill="#D9A21B"/><circle cx="85" cy="330" r="7" fill="#D9A21B"/>
+                <circle cx="140" cy="160" r="7" fill="#2F7D4F"/><circle cx="160" cy="200" r="7" fill="#2F7D4F"/><circle cx="240" cy="370" r="7" fill="#2F7D4F"/><circle cx="40" cy="250" r="7" fill="#2F7D4F"/>
+                <circle cx="150" cy="255" r="13" fill="none" stroke="#14322A" stroke-width="2"/>
+              </g>
+              <g transform="translate(160 262)"><rect width="150" height="44" rx="6" fill="#fff" stroke="#DCE3DA"/>
+                <text x="8" y="16" font-size="10" font-weight="700" fill="#14322A">#T-08412 · Acer platanoides</text>
+                <text x="8" y="31" font-size="9.5" fill="#5E6E67">Stress 86 · 14 gg senz'acqua</text></g>
+            </svg>
+          </div>
+
+          <div style="flex:1.25;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+            <div class="panel">
+              <h3>Da irrigare – prossimi 3 giorni <span class="muted" style="font-weight:400;font-size:12px">pioggia prevista: gio 6 mm</span></h3>
+              <table>
+                <tr><th>Albero</th><th>Via</th><th>Indice</th><th>Fattori</th><th></th></tr>
+                <tr><td><b>#T-08412</b> Acer platanoides</td><td>Via Verdi</td><td><span class="idx hot">86</span></td><td>14 gg senz'acqua · 33 °C · 1 anno</td><td><span class="chip">Squadra A</span></td></tr>
+                <tr><td><b>#T-11920</b> Tilia cordata</td><td>Corso 3 Novembre</td><td><span class="idx hot">81</span></td><td>12 gg · 33 °C · 2 anni</td><td><span class="chip">Squadra A</span></td></tr>
+                <tr><td><b>#T-10377</b> Acer campestre</td><td>Via Brennero</td><td><span class="idx hot">78</span></td><td>11 gg · 32 °C · 1 anno</td><td><span class="chip">Assegna</span></td></tr>
+                <tr><td><b>#T-09954</b> Celtis australis</td><td>Piazza Venezia</td><td><span class="idx mid">62</span></td><td>9 gg · annaffiato da cittadino 3 gg fa</td><td><span class="tag grey">rinviabile</span></td></tr>
+                <tr><td><b>#T-12003</b> Prunus avium</td><td>Via Perini</td><td><span class="idx mid">55</span></td><td>8 gg · 31 °C · 3 anni</td><td><span class="tag grey">rinviabile</span></td></tr>
+              </table>
+            </div>
+            <div class="panel">
+              <h3>Segnalazione #S-341 · da cittadino · 13:42 <span class="tag hot">priorità alta (proposta AI)</span></h3>
+              <div style="display:flex;gap:12px;font-size:12.5px">
+                <div style="width:110px;height:84px;border-radius:8px;background:linear-gradient(135deg,#9DB89A,#5F7F5C);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px">foto</div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+                  <div class="muted">"Ramo grosso spezzato sopra la pista ciclabile, penzola."</div>
+                  <div><b>Categoria:</b> Ramo pericolante <span class="muted">(confidenza 0,91)</span></div>
+                  <div><b>Albero:</b> #T-04577 Platanus × hispanica, 6 m dalla posizione <span class="muted">· nessun duplicato aperto</span></div>
+                  <div style="display:flex;gap:6px;margin-top:2px"><span class="btn" style="padding:5px 12px;font-size:12px">Conferma e crea intervento</span><span class="btn ghost" style="padding:5px 12px;font-size:12px">Correggi</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 3: PIANIFICATORE – SCENARIO WHAT-IF ============ -->
+<section class="screen" id="s3">
+  <div class="label">3 · Pianificatore – Scenario di piantumazione what-if <small>(MU-Fig.3 · UC-07 · US-06 · RF11–RF13)</small></div>
+  <div class="desk">
+    <div class="chrome"><i></i><i></i><i></i><span>canopia.comune.trento.it/scenari/via-brennero</span></div>
+    <div class="dbody">
+      <div class="side">
+        <div class="logo"><i></i><b>Canopia</b></div>
+        <div class="it">🗺 Mappa alberi</div>
+        <div class="it">💧 Da irrigare</div>
+        <div class="it">⚠ Segnalazioni</div>
+        <div class="it on">🌱 Scenari</div>
+        <div class="it">📊 Benefici</div>
+        <div class="it">🔥 Mappa calore</div>
+        <div class="role">Laura B. · Pianificatrice<br>Ufficio PAESC</div>
+      </div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:17px;font-weight:800">Scenario: Via Brennero – 30 nuovi tigli</div>
+            <div class="muted" style="font-size:12px">Bozza · creato 04/10/2026 · <b style="color:var(--sun)">non modifica il censimento reale</b></div>
+          </div>
+          <div style="display:flex;gap:8px"><span class="btn ghost">Esporta report</span><span class="btn">Salva scenario</span></div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><span class="muted">Ombra sulla via alle 14 <span class="est">stima</span></span><div class="v"><s>12 %</s> → 46 %</div><span class="d">+34 punti</span></div>
+          <div class="kpi"><span class="muted">CO₂ assorbita / anno <span class="est">stima</span></span><div class="v">+0,9 t</div><span class="d">a maturità · +3 % circoscrizione</span></div>
+          <div class="kpi"><span class="muted">PM₁₀ rimosso / anno <span class="est">stima</span></span><div class="v">+4,2 kg</div><span class="d">a maturità (≈ 20 anni)</span></div>
+          <div class="kpi"><span class="muted">Copertura di chioma</span><div class="v">+2.100 m²</div><span class="d">30 × Tilia cordata, Ø 9,5 m</span></div>
+        </div>
+
+        <div class="grid">
+          <div class="panel" style="flex:1.5">
+            <h3>Ombra prevista – 21 luglio
+              <span style="display:flex;gap:6px"><span class="chip">11:00</span><span class="chip on">14:00</span><span class="chip">17:00</span><span class="chip">Prima / Dopo</span></span></h3>
+            <svg viewBox="0 0 620 330" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="border-radius:8px;background:#EEF0EA;min-height:0">
+              <rect width="620" height="330" fill="#EEF0EA"/>
+              <g fill="#E1E3DC"><rect x="20" y="20" width="250" height="110" rx="4"/><rect x="350" y="20" width="250" height="110" rx="4"/>
+                <rect x="20" y="200" width="250" height="110" rx="4"/><rect x="350" y="200" width="250" height="110" rx="4"/></g>
+              <rect x="0" y="140" width="620" height="50" fill="#F3D9C8"/>
+              <rect x="280" y="0" width="60" height="330" fill="#fff"/>
+              <text x="12" y="170" font-size="12" font-weight="700" fill="#A0522D">Via Brennero</text>
+              <!-- existing shade -->
+              <g fill="#1F5E3A" opacity=".28"><ellipse cx="470" cy="160" rx="22" ry="12"/><ellipse cx="560" cy="160" rx="22" ry="12"/></g>
+              <g fill="#2F7D4F"><circle cx="465" cy="140" r="7"/><circle cx="555" cy="140" r="7"/></g>
+              <!-- virtual trees + their shade -->
+              <g fill="#5FA96E" opacity=".32">
+                <ellipse cx="45" cy="165" rx="22" ry="13"/><ellipse cx="95" cy="165" rx="22" ry="13"/><ellipse cx="145" cy="165" rx="22" ry="13"/><ellipse cx="195" cy="165" rx="22" ry="13"/><ellipse cx="245" cy="165" rx="22" ry="13"/>
+                <ellipse cx="375" cy="165" rx="22" ry="13"/><ellipse cx="420" cy="165" rx="22" ry="13"/><ellipse cx="515" cy="165" rx="22" ry="13"/><ellipse cx="605" cy="165" rx="22" ry="13"/>
+              </g>
+              <g fill="#fff" stroke="#2F7D4F" stroke-width="2.5" stroke-dasharray="3 2">
+                <circle cx="40" cy="140" r="8"/><circle cx="90" cy="140" r="8"/><circle cx="140" cy="140" r="8"/><circle cx="190" cy="140" r="8"/><circle cx="240" cy="140" r="8"/>
+                <circle cx="370" cy="140" r="8"/><circle cx="415" cy="140" r="8"/><circle cx="510" cy="140" r="8"/><circle cx="600" cy="140" r="8"/>
+              </g>
+              <g transform="translate(14 292)" font-size="11" fill="#5E6E67">
+                <circle cx="6" cy="6" r="6" fill="#2F7D4F"/><text x="16" y="10">esistente</text>
+                <circle cx="86" cy="6" r="6" fill="#fff" stroke="#2F7D4F" stroke-width="2" stroke-dasharray="3 2"/><text x="96" y="10">virtuale (scenario)</text>
+                <rect x="210" y="0" width="14" height="12" fill="#5FA96E" opacity=".5"/><text x="230" y="10">ombra al suolo alle 14</text>
+                <rect x="370" y="0" width="14" height="12" fill="#F3D9C8"/><text x="390" y="10">asfalto al sole</text>
+              </g>
+              <g transform="translate(560 40)"><circle r="12" fill="#F2B544"/><text x="0" y="30" font-size="10" text-anchor="middle" fill="#8A6A2A">az. 205° · elev. 62°</text></g>
+            </svg>
+            <div class="legend"><span>Specie: <b style="color:var(--ink)">Tilia cordata ▾</b></span><span>Dimensione a maturità: <b style="color:var(--ink)">h 18 m · chioma 9,5 m</b></span><span>Passo: <b style="color:var(--ink)">10 m</b></span><span class="chip">+ Aggiungi alberi</span><span class="chip">− Rimuovi</span></div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+            <div class="panel">
+              <h3>Aree candidate più utili</h3>
+              <table>
+                <tr><th>#</th><th>Tratto</th><th>Calore</th><th>Ombra oggi</th><th>Punteggio</th></tr>
+                <tr><td>1</td><td><b>Via Brennero</b> (Canova–Lavis)</td><td><span class="tag hot">alto</span></td><td>12 %</td><td><b>92</b></td></tr>
+                <tr><td>2</td><td>Piazza Dante – lato stazione</td><td><span class="tag hot">alto</span></td><td>20 %</td><td><b>85</b></td></tr>
+                <tr><td>3</td><td>Via Sanseverino</td><td><span class="tag mid">medio</span></td><td>15 %</td><td><b>77</b></td></tr>
+                <tr><td>4</td><td>Parcheggio Ex-Zuffo</td><td><span class="tag hot">alto</span></td><td>3 %</td><td><b>74</b></td></tr>
+              </table>
+              <div class="muted" style="font-size:11px">Punteggio = calore + superficie impermeabile + assenza di ombra + passaggio pedonale (RF12)</div>
+            </div>
+            <div class="ai"><b>Sintesi:</b> i 30 tigli portano l'ombra di Via Brennero dal 12 % al 46 % nelle ore più calde, soprattutto sul marciapiede est. L'effetto è pieno solo a maturità (circa 20 anni); nei primi 5 anni l'ombra aggiunta è circa un terzo. Valori stimati con modello allometrico, vedi metodo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 4: CITTADINO – SCHEDA ALBERO ============ -->
+<section class="screen" id="s4">
+  <div class="label">4 · Cittadino – Scheda albero <small>(MU-Fig.4 · UC-02, UC-04, UC-05 · US-08, US-09 · RF19, RF22, RF23)</small></div>
+  <div class="phone">
+    <div class="status"><span>14:09</span><span>●●● 5G ▮</span></div>
+    <div class="ptop">
+      <div style="font-size:13px;font-weight:700">‹ Percorso</div>
+      <div class="logo"><i></i><b>Canopia</b></div>
+    </div>
+    <div class="pcontent">
+      <div class="map">
+        <svg viewBox="0 0 340 120" width="100%" height="120" xmlns="http://www.w3.org/2000/svg">
+          <rect width="340" height="120" fill="#EEF0EA"/>
+          <path d="M0 70H340" stroke="#fff" stroke-width="14"/>
+          <g fill="#2F7D4F" opacity=".25"><ellipse cx="170" cy="60" rx="34" ry="24"/></g>
+          <g fill="#2F7D4F"><circle cx="90" cy="58" r="4"/><circle cx="250" cy="58" r="4"/></g>
+          <circle cx="170" cy="58" r="8" fill="#2F7D4F" stroke="#14322A" stroke-width="3"/>
+          <text x="170" y="104" font-size="10" text-anchor="middle" fill="#5E6E67">Corso 3 Novembre · Circoscrizione Oltrefersina</text>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800">Tiglio selvatico</div>
+        <div class="muted" style="font-size:13px"><i>Tilia cordata</i> · #T-11920</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="chip">↕ 14 m</span><span class="chip">⌀ chioma 9 m</span><span class="chip">⌀ tronco 38 cm</span><span class="chip">Strada alberata</span>
+      </div>
+      <div class="field" style="gap:8px">
+        <div style="font-weight:700">Cosa fa per te ogni anno <span class="est">stima</span></div>
+        <div class="r">🍃 <span><b>21 kg</b> di CO₂ assorbita · come <b>140 km</b> in auto [GAP10]</span></div>
+        <div class="r">🫁 <span><b>180 g</b> di polveri sottili rimosse</span></div>
+        <div class="r">🌳 <span><b>64 m²</b> di ombra a mezzogiorno d'estate</span></div>
+        <div class="muted" style="font-size:11px">Modello allometrico per <i>Tilia</i>, incertezza ±30 % · <u>come lo calcoliamo</u></div>
+      </div>
+      <div class="ai" style="font-size:12px"><b>La specie:</b> il tiglio è molto diffuso nei viali di Trento; fiorisce a giugno e la chioma fitta fa molta ombra.</div>
+      <div style="display:flex;gap:8px">
+        <div class="btn" style="flex:1">💧 Ho annaffiato</div>
+        <div class="btn ghost" style="flex:1">♡ Adotta</div>
+      </div>
+      <div class="btn ghost">⚠ Segnala un problema</div>
+      <div class="muted" style="font-size:11px;text-align:center">Albero giovane? No (impianto 2009): l'annaffiatura non è necessaria.</div>
+    </div>
+    <div class="nav"><span>🧭<br>Percorsi</span><span class="on">🌳<br>Alberi</span><span>🏘<br>Quartiere</span><span>👤<br>Profilo</span></div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 5: CITTADINO REGISTRATO – SEGNALAZIONE ============ -->
+<section class="screen" id="s5">
+  <div class="label">5 · Cittadino registrato – Invio segnalazione <small>(MU-Fig.5 · UC-03 · US-07 · RF21)</small></div>
+  <div class="phone">
+    <div class="status"><span>18:31</span><span>●●● 5G ▮</span></div>
+    <div class="ptop">
+      <div style="font-size:13px;font-weight:700">‹ Scheda albero</div>
+      <div class="logo"><i></i><b>Canopia</b></div>
+    </div>
+    <div class="pcontent">
+      <div style="font-size:18px;font-weight:800">Segnala un problema</div>
+      <div style="height:150px;border-radius:12px;background:linear-gradient(135deg,#9DB89A,#5E7F5C);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px">📷 foto allegata · volti e targhe oscurati</div>
+      <div class="field">
+        <div class="muted" style="font-size:11px">Descrizione</div>
+        <div>Ramo grosso spezzato sopra la pista ciclabile, penzola.</div>
+      </div>
+      <div class="field" style="border:2px solid var(--leaf);background:#F3FAF2">
+        <div style="font-weight:700;color:var(--leaf)">Proposta automatica — puoi modificarla</div>
+        <div class="r">Categoria: <span class="chip on">Ramo pericolante ▾</span></div>
+        <div class="r">Priorità: <span class="tag hot">ALTA</span></div>
+        <div class="r">Albero: <b>#T-04577 Platanus × hispanica</b> <span class="muted">(6 m)</span></div>
+        <hr>
+        <div style="font-size:12px">ℹ Esiste già una segnalazione aperta su questo albero e categoria: la tua sarà <b>collegata</b> a quella.</div>
+      </div>
+      <div style="background:#FBE7E2;border-radius:10px;padding:8px 10px;font-size:12px;color:var(--hot)"><b>Pericolo immediato?</b> Chiama il 112 o la Polizia locale: la segnalazione non è un servizio di pronto intervento.</div>
+      <div class="btn">Invia segnalazione</div>
+      <div class="field" style="font-size:12px">
+        <div style="font-weight:700">Le mie segnalazioni</div>
+        <div class="r"><span class="tag grey">ricevuta</span> #S-341 · ramo pericolante · oggi</div>
+        <div class="r"><span class="tag ok">chiusa</span> #S-288 · sofferenza idrica · 12/07</div>
+        <div class="muted" style="font-size:11px">Inoltrate anche a SensorTrento [GAP11]</div>
+      </div>
+    </div>
+    <div class="nav"><span>🧭<br>Percorsi</span><span class="on">🌳<br>Alberi</span><span>🏘<br>Quartiere</span><span>👤<br>Profilo</span></div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 6: PIANIFICATORE – BENEFICI ============ -->
+<section class="screen" id="s6">
+  <div class="label">6 · Pianificatore / Cittadino – Benefici del quartiere <small>(MU-Fig.6 · UC-06 · US-05 · RF8, RF9, RF20)</small></div>
+  <div class="desk">
+    <div class="chrome"><i></i><i></i><i></i><span>canopia.comune.trento.it/benefici</span></div>
+    <div class="dbody">
+      <div class="side">
+        <div class="logo"><i></i><b>Canopia</b></div>
+        <div class="it">🗺 Mappa alberi</div>
+        <div class="it">💧 Da irrigare</div>
+        <div class="it">⚠ Segnalazioni</div>
+        <div class="it">🌱 Scenari</div>
+        <div class="it on">📊 Benefici</div>
+        <div class="it">🔥 Mappa calore</div>
+        <div class="role">Laura B. · Pianificatrice<br>Ufficio PAESC</div>
+      </div>
+      <div class="main">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:18px;font-weight:800">Benefici ecosistemici <span class="est">stima</span></div>
+          <div style="display:flex;gap:6px;align-items:center;font-size:12px">
+            <span class="chip">Tutta la città</span><span class="chip on">Oltrefersina ▾</span>
+            <span class="muted">confronta</span><span class="chip">2025 ▾</span><span class="chip">2026 ▾</span>
+            <span class="btn ghost" style="padding:5px 10px;font-size:12px">⇩ Esporta report</span>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><span class="muted">Alberi censiti</span><span class="v">2.104 <s>/ 17.845</s></span><span class="d">+38 rispetto al 2025</span></div>
+          <div class="kpi"><span class="muted">Copertura di chioma</span><span class="v">14,2 %</span><span class="d">+0,4 punti</span></div>
+          <div class="kpi"><span class="muted">CO₂ stoccata</span><span class="v">3.920 t</span><span class="muted">assorbita 168 t/anno</span></div>
+          <div class="kpi"><span class="muted">PM₁₀ + PM₂.₅ rimosso</span><span class="v">1,3 t/anno</span><span class="d">+2,1 %</span></div>
+        </div>
+        <div class="grid">
+          <div class="panel" style="flex:1.1">
+            <h3>Copertura per circoscrizione <span class="legend"><span><span class="dot" style="background:#CFE5CB"></span>&lt;10 %</span><span><span class="dot" style="background:#7DBB82"></span>10–20 %</span><span><span class="dot" style="background:#2F7D4F"></span>&gt;20 %</span></span></h3>
+            <svg viewBox="0 0 460 330" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" font-size="11" fill="#14322A">
+              <rect width="460" height="330" fill="#F4F5F1" rx="8"/>
+              <path d="M40 30L170 20L190 120L60 140Z" fill="#7DBB82" stroke="#fff" stroke-width="3"/><text x="105" y="80" text-anchor="middle">Gardolo 12 %</text>
+              <path d="M190 120L60 140L80 230L200 220Z" fill="#CFE5CB" stroke="#fff" stroke-width="3"/><text x="135" y="182" text-anchor="middle">Centro storico 8 %</text>
+              <path d="M200 220L80 230L110 310L230 300Z" fill="#7DBB82" stroke="#fff" stroke-width="3"/><text x="155" y="268" text-anchor="middle">S. Giuseppe 13 %</text>
+              <path d="M190 120L330 100L340 210L200 220Z" fill="#7DBB82" stroke="#14322A" stroke-width="3"/><text x="265" y="160" text-anchor="middle" font-weight="700">Oltrefersina 14 %</text>
+              <path d="M330 100L430 80L440 200L340 210Z" fill="#2F7D4F" stroke="#fff" stroke-width="3"/><text x="385" y="148" text-anchor="middle" fill="#fff">Argentario 27 %</text>
+              <path d="M200 220L340 210L350 300L230 300Z" fill="#2F7D4F" stroke="#fff" stroke-width="3"/><text x="285" y="262" text-anchor="middle" fill="#fff">Villazzano 24 %</text>
+            </svg>
+          </div>
+          <div class="panel" style="flex:1">
+            <h3>Oltrefersina · 2025 → 2026</h3>
+            <table>
+              <tr><th>Indicatore</th><th>2025</th><th>2026</th><th>Δ</th></tr>
+              <tr><td>Alberi</td><td>2.066</td><td>2.104</td><td><b>+38</b></td></tr>
+              <tr><td>Copertura chioma</td><td>13,8 %</td><td>14,2 %</td><td><b>+0,4</b></td></tr>
+              <tr><td>CO₂ assorbita (t/anno)</td><td>162</td><td>168</td><td><b>+6</b></td></tr>
+              <tr><td>PM rimosso (kg/anno)</td><td>1.270</td><td>1.297</td><td><b>+27</b></td></tr>
+              <tr><td>Ombra su strade (ore 14)</td><td>21 %</td><td>22 %</td><td><b>+1</b></td></tr>
+            </table>
+            <div class="muted" style="font-size:11px">Modelli: equazioni allometriche per genere, rimozione PM da area fogliare (BR4) · incertezza ±30 % · fonte censimento: Comune di Trento</div>
+            <div class="ai"><b>Sintesi:</b> nel 2026 l'Oltrefersina ha guadagnato 38 alberi, soprattutto lungo Via Brennero; la copertura resta sotto la media cittadina (16 %).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 7: LOGIN / REGISTRAZIONE ============ -->
+<section class="screen" id="s7">
+  <div class="label">7 · Accesso e registrazione <small>(MU-Fig.7 · UC-16 · US-13 · RF24)</small></div>
+  <div class="phone">
+    <div class="status"><span>09:15</span><span>●●● 5G ▮</span></div>
+    <div class="ptop">
+      <div style="font-size:13px;font-weight:700">‹ Indietro</div>
+      <div></div>
+    </div>
+    <div class="pcontent" style="gap:12px">
+      <div style="text-align:center;padding:10px 0 4px">
+        <div class="logo" style="justify-content:center;font-size:26px"><i></i><b>Canopia</b></div>
+        <div class="muted" style="font-size:12px;margin-top:6px">Accedi per segnalare, annaffiare e adottare un albero</div>
+      </div>
+      <div style="display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;font-size:13px;font-weight:700">
+        <div style="flex:1;text-align:center;padding:7px;border-radius:9px;background:var(--ink);color:#fff">Accedi</div>
+        <div style="flex:1;text-align:center;padding:7px">Registrati</div>
+      </div>
+      <div class="field"><div class="muted" style="font-size:11px">Email</div><div>anna.rossi@esempio.it</div></div>
+      <div class="field"><div class="muted" style="font-size:11px">Password</div><div>••••••••••</div></div>
+      <div style="background:#FBE7E2;border-radius:10px;padding:8px 10px;font-size:12px;color:var(--hot)">Email o password non corrette. Riprova.</div>
+      <div class="btn">Accedi</div>
+      <div class="muted" style="font-size:12px;text-align:center"><u>Password dimenticata?</u></div>
+      <hr style="border:0;border-top:1px solid var(--line)">
+      <div style="font-weight:700;font-size:13px">Nuovo utente? Registrati in 2 passi</div>
+      <div class="field" style="font-size:12px;gap:4px">
+        <div>① Nome, cognome, email, password · accetto l'informativa privacy</div>
+        <div>② Conferma dal link ricevuto via email: poi il profilo è attivo</div>
+      </div>
+      <div class="muted" style="font-size:11.5px;text-align:center">Percorsi all'ombra e schede degli alberi sono utilizzabili anche <b>senza account</b>.</div>
+    </div>
+    <div class="nav"><span>🧭<br>Percorsi</span><span>🌳<br>Alberi</span><span>🏘<br>Quartiere</span><span class="on">👤<br>Profilo</span></div>
+  </div>
+</section>
+
+<div class="notes">
+  <h2>Note</h2>
+  <ul>
+    <li>Le schermate 1, 4, 5 e 7 sono pensate per smartphone (RNF2); le schermate 2, 3 e 6 per desktop (back-office).</li>
+    <li>Le proposte dell'AI (query interpretata, categoria e priorità della segnalazione, sintesi) sono sempre confermabili o correggibili (RNF7).</li>
+    <li>Ogni valore stimato porta l'etichetta <span class="est">stima</span> (RNF5); i livelli non sono comunicati solo con il colore (RNF10).</li>
+    <li>Tutti i nomi, gli ID e i numeri sono di esempio.</li>
+  </ul>
+</div>
+
+<script>
+  var h = location.hash.slice(1);
+  if (h) { document.body.classList.add('single'); var s = document.getElementById(h); if (s) s.classList.add('show'); }
+</script>
+</body>
+</html>

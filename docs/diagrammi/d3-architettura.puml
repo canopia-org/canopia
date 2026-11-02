@@ -1,0 +1,47 @@
+@startuml d3-architettura
+skinparam componentStyle rectangle
+actor "Cittadino" as Cit
+actor "Tecnico / Pianificatore /\nAmministratore" as Op
+
+node "CDN / GitHub Pages" {
+  [C-01 Web app Vue 3 (SPA)] as FE
+}
+node "render.com" {
+  package "Web Service" {
+    [C-02 API REST Express\n/api/v1 + JWT] as API
+    [C-03 Ombra] as OMB
+    [C-04 Percorsi] as PER
+    [C-05 Stime] as STI
+    [C-06 Adattatore AI] as AIA
+  }
+  package "Background Worker" {
+    [C-07 Job pianificati] as JOB
+    [C-08 Importatori] as IMP
+  }
+}
+database "C-09 MongoDB Atlas\n(2dsphere)" as DB
+cloud "Servizio AI\n(LLM / visione)" as AI
+cloud "C-10 Archivio foto" as FILES
+cloud "C-11 Email" as MAIL
+cloud "Fonti dati\nWMS Comune · Meteotrentino\nOSM Overpass · dati.trentino\nLandsat" as SRC
+cloud "SensorTrento\n[GAP11]" as ST
+
+Cit --> FE
+Op --> FE
+FE --> API : HTTPS JSON\nBearer JWT
+API --> OMB
+API --> PER
+API --> STI
+API --> AIA
+PER --> OMB
+AIA --> AI : schema JSON fisso\ntimeout 5 s
+API --> DB
+API --> FILES
+API --> MAIL
+API ..> ST
+JOB --> IMP
+IMP --> SRC
+JOB --> STI
+JOB --> OMB
+JOB --> DB
+@enduml

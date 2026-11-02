@@ -1,0 +1,32 @@
+@startuml d2-activity-f04-irrigazione
+|Scheduler|
+start
+:Aggiornamento meteo completato;
+|Canopia|
+:Seleziona alberi giovani (BR11)
+non serviti da impianto;
+:Per ogni albero calcola fattori:
+gg senza pioggia, gg senza acqua, Tmax, età;
+:Calcola indice 0–100 (BR5);
+if (pioggia prevista 24 h ≥ soglia?) then (sì)
+  :Marca "rinviabile" (BR12);
+else (no)
+endif
+|Tecnico|
+:Apre "Da irrigare";
+|Canopia|
+if (meteo più vecchio di 6 h?) then (sì)
+  :Mostra avviso (BR22);
+else (no)
+endif
+:Mostra elenco ordinato con fattori;
+|Tecnico|
+:Seleziona alberi e assegna squadra;
+|Canopia|
+:Crea interventi pianificati (F06);
+|Tecnico|
+:Registra irrigazione svolta;
+|Canopia|
+:Registra annaffiatura e ricalcola indice;
+stop
+@enduml
