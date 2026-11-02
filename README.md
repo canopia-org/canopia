@@ -19,13 +19,54 @@ canopia/
 ├── scripts/
 │   ├── build-pdf.py         # Genera il PDF di un deliverable
 │   └── scarica_alberi.py    # Scarica il censimento alberi in data/
-├── backend/                 # API Node.js/Express (dallo Sprint 1)
-└── frontend/                # SPA Vue 3 (dallo Sprint 1)
+├── backend/                 # API Node.js/Express (src/, test/)
+├── frontend/                # SPA Vue 3 + Vite (src/, test/)
+├── .github/workflows/       # CI e deploy del frontend su GitHub Pages
+└── render.yaml              # Deploy di API e worker su render.com
 ```
 
-`backend/` e `frontend/` vengono creati con il task T-01 dello Sprint 1 (D3, sez. 4–5).
+## Sviluppo
 
-## Comandi
+Requisiti: Node.js 20 (vedi `.nvmrc`), MongoDB locale o una stringa di connessione Atlas.
+
+```bash
+npm install
+```
+
+```bash
+cp .env.example backend/.env
+```
+
+```bash
+npm run dev -w backend
+```
+
+```bash
+npm run dev -w frontend
+```
+
+L'API risponde su `http://localhost:3000/api/v1/health`, il frontend su `http://localhost:5173`.
+
+Controlli eseguiti anche dalla CI a ogni Pull Request:
+
+```bash
+npm run lint
+```
+
+```bash
+npm test
+```
+
+```bash
+npm run openapi:lint
+```
+
+## Deploy
+
+- **Frontend:** a ogni push su `main` il workflow `pages.yml` pubblica `frontend/` su GitHub Pages. Va attivato una volta in Settings → Pages → Source: GitHub Actions, e va impostata la variabile di repository `VITE_API_URL`.
+- **API:** collegare il repository a render.com come Blueprint (`render.yaml`) e impostare `MONGODB_URI` dalla dashboard.
+
+## Documenti
 
 Generare il PDF di un deliverable (richiede Node e Google Chrome):
 

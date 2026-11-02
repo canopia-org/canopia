@@ -29,6 +29,21 @@ security:
   - bearerAuth: []
 
 paths:
+  /health:
+    get:
+      tags: [dati]
+      summary: Stato del servizio
+      security: []
+      responses:
+        '200':
+          description: Servizio attivo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stato: { type: string, example: ok }
+                  versione: { type: string }
   /auth/register:
     post:
       tags: [auth]
@@ -96,7 +111,12 @@ paths:
       x-ac: [AC-F02-04, AC-F02-06, AC-F05-01, AC-F05-02, AC-F05-03]
       security: [{}, { bearerAuth: [] }]
       parameters:
-        - { name: bbox, in: query, schema: { type: string }, description: 'minLon,minLat,maxLon,maxLat' }
+        - {
+            name: bbox,
+            in: query,
+            schema: { type: string },
+            description: 'minLon,minLat,maxLon,maxLat',
+          }
         - { name: genere, in: query, schema: { type: string } }
         - { name: specie, in: query, schema: { type: string } }
         - { name: circoscrizione, in: query, schema: { type: string } }
@@ -105,7 +125,11 @@ paths:
         - { name: altezzaMax, in: query, schema: { type: number } }
         - { name: annoImpiantoMin, in: query, schema: { type: integer } }
         - { name: ggSenzaAcquaMin, in: query, schema: { type: integer } }
-        - { name: stato, in: query, schema: { type: string, enum: [vivo, abbattuto, non_piu_nel_censimento] } }
+        - {
+            name: stato,
+            in: query,
+            schema: { type: string, enum: [vivo, abbattuto, non_piu_nel_censimento] },
+          }
         - { $ref: '#/components/parameters/page' }
         - { $ref: '#/components/parameters/limit' }
       responses:
@@ -148,7 +172,7 @@ paths:
       x-feature: F02
       x-ac: [AC-F02-01, AC-F02-02, AC-F02-03]
       security: [{}, { bearerAuth: [] }]
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       responses:
         '200':
           description: Scheda
@@ -161,7 +185,7 @@ paths:
       tags: [interventi]
       summary: Storico e interventi pianificati di un albero
       x-feature: F06
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       responses:
         '200':
           description: Interventi
@@ -173,7 +197,7 @@ paths:
       summary: Registra o pianifica un intervento
       x-feature: F06
       x-ac: [AC-F06-01, AC-F06-02, AC-F06-03, AC-F06-06]
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       requestBody:
         required: true
         content:
@@ -193,7 +217,7 @@ paths:
       summary: Registra un'annaffiatura (cittadino o tecnico)
       x-feature: F04
       x-ac: [AC-F04-02, AC-F04-06]
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       responses:
         '201': { description: 'Annaffiatura registrata, indice ricalcolato' }
         '409': { description: Albero non giovane o annaffiatura troppo ravvicinata (BR17) }
@@ -204,7 +228,7 @@ paths:
       summary: Adotta un albero
       x-feature: F09
       x-ac: [AC-F09-03]
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       responses:
         '201': { description: Adozione creata }
         '409': { description: Limite di adozioni raggiunto o albero non giovane }
@@ -213,7 +237,7 @@ paths:
       summary: Rinuncia all'adozione
       x-feature: F09
       x-ac: [AC-F09-04]
-      parameters: [ { $ref: '#/components/parameters/codice' } ]
+      parameters: [{ $ref: '#/components/parameters/codice' }]
       responses:
         '204': { description: Adozione chiusa }
 
@@ -239,7 +263,7 @@ paths:
       summary: Segna un intervento come svolto o annullato
       x-feature: F06
       x-ac: [AC-F06-05]
-      parameters: [ { $ref: '#/components/parameters/id' } ]
+      parameters: [{ $ref: '#/components/parameters/id' }]
       requestBody:
         required: true
         content:
@@ -283,7 +307,13 @@ paths:
       x-ac: [AC-F03-01, AC-F03-02, AC-F03-03]
       security: [{}, { bearerAuth: [] }]
       parameters:
-        - { name: area, in: query, required: true, schema: { type: string }, description: "'citta' o codice circoscrizione" }
+        - {
+            name: area,
+            in: query,
+            required: true,
+            schema: { type: string },
+            description: "'citta' o codice circoscrizione",
+          }
         - { name: anno, in: query, schema: { type: integer } }
         - { name: confrontaCon, in: query, schema: { type: integer } }
       responses:
@@ -328,7 +358,8 @@ paths:
                 properties:
                   meteoAggiornatoAl: { type: string, format: date-time }
                   avvisoMeteoVecchio: { type: boolean }
-                  items: { type: array, items: { $ref: '#/components/schemas/PrioritaIrrigazione' } }
+                  items:
+                    { type: array, items: { $ref: '#/components/schemas/PrioritaIrrigazione' } }
 
   /mappe/livelli:
     get:
@@ -344,7 +375,7 @@ paths:
       summary: Classifica delle aree candidate alla piantumazione
       x-feature: F07
       x-ac: [AC-F07-04]
-      parameters: [ { $ref: '#/components/parameters/limit' } ]
+      parameters: [{ $ref: '#/components/parameters/limit' }]
       responses:
         '200': { description: Aree con punteggio e fattori }
   /scenari:
@@ -376,7 +407,7 @@ paths:
       tags: [scenari]
       summary: Dettaglio scenario
       x-feature: F07
-      parameters: [ { $ref: '#/components/parameters/id' } ]
+      parameters: [{ $ref: '#/components/parameters/id' }]
       responses:
         '200': { description: Scenario }
         '404': { $ref: '#/components/responses/NotFound' }
@@ -384,7 +415,7 @@ paths:
       tags: [scenari]
       summary: Elimina uno scenario
       x-feature: F07
-      parameters: [ { $ref: '#/components/parameters/id' } ]
+      parameters: [{ $ref: '#/components/parameters/id' }]
       responses:
         '204': { description: Eliminato }
 
@@ -433,7 +464,7 @@ paths:
       summary: Conferma/corregge la proposta o cambia stato (tecnico)
       x-feature: F08
       x-ac: [AC-F08-03, AC-F08-04, AC-F08-07]
-      parameters: [ { $ref: '#/components/parameters/id' } ]
+      parameters: [{ $ref: '#/components/parameters/id' }]
       requestBody:
         required: true
         content:
@@ -481,7 +512,7 @@ paths:
       summary: Assegna o revoca il ruolo
       x-feature: F10
       x-ac: [AC-F10-05, AC-F10-07, AC-F10-08]
-      parameters: [ { $ref: '#/components/parameters/id' } ]
+      parameters: [{ $ref: '#/components/parameters/id' }]
       requestBody:
         required: true
         content:
@@ -529,7 +560,8 @@ components:
     codice: { name: codice, in: path, required: true, schema: { type: string } }
     id: { name: id, in: path, required: true, schema: { type: string } }
     page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
-    limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 50 } }
+    limit:
+      { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 500, default: 50 } }
   responses:
     BadRequest:
       description: Dati non validi
@@ -632,7 +664,12 @@ components:
       properties:
         self: { type: string }
         albero: { type: string }
-        tipo: { type: string, enum: [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione] }
+        tipo:
+          {
+            type: string,
+            enum:
+              [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione],
+          }
         stato: { type: string, enum: [pianificato, svolto, annullato] }
         dataPrevista: { type: string, format: date }
         dataEsecuzione: { type: string, format: date }
@@ -643,7 +680,12 @@ components:
       type: object
       required: [tipo, stato]
       properties:
-        tipo: { type: string, enum: [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione] }
+        tipo:
+          {
+            type: string,
+            enum:
+              [potatura, controllo_fitosanitario, irrigazione, abbattimento, nuova_piantumazione],
+          }
         stato: { type: string, enum: [pianificato, svolto] }
         dataPrevista: { type: string, format: date }
         squadra: { type: string }
@@ -675,7 +717,7 @@ components:
       type: object
       properties:
         breve: { $ref: '#/components/schemas/Percorso' }
-        fresco: { type: object, allOf: [ { $ref: '#/components/schemas/Percorso' } ], nullable: true }
+        fresco: { type: object, allOf: [{ $ref: '#/components/schemas/Percorso' }], nullable: true }
         ombraCalcolata: { type: boolean }
         messaggio: { type: string }
         indiceCalore: { type: number, nullable: true }
@@ -753,6 +795,10 @@ components:
         categoria: { type: string }
         priorita: { type: string }
         categoriaConfermata: { type: boolean }
-        stato: { type: string, enum: [ricevuta, collegata, confermata, in_lavorazione, chiusa, respinta] }
+        stato:
+          {
+            type: string,
+            enum: [ricevuta, collegata, confermata, in_lavorazione, chiusa, respinta],
+          }
         collegataA: { type: string, nullable: true }
         storicoStati: { type: array, items: { type: object } }
