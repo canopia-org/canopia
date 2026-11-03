@@ -1,0 +1,31 @@
+# Blueprint render.com (D3 sez. 1.3): API web + worker per i job pianificati.
+# Le variabili con sync: false si impostano dalla dashboard di render.
+# I worker non sono disponibili nel piano free: in alternativa si usa un Cron Job di render.
+services:
+  - type: web
+    name: canopia-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci -w backend --omit=dev
+    startCommand: npm start -w backend
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://canopia-org.github.io
+  - type: worker
+    name: canopia-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm ci -w backend --omit=dev
+    startCommand: npm run worker -w backend
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: MONGODB_URI
+        sync: false

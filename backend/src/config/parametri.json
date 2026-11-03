@@ -1,0 +1,18 @@
+{
+  "_nota": "Parametri delle business rule (D2 sez. 2.4). I valori sono di default e vanno validati con il Comune (ADR-09).",
+  "percorsi": {
+    "tolleranzaDefaultPerc": 20,
+    "tolleranzaMaxPerc": 50,
+    "miglioramentoOmbraMinPunti": 10
+  },
+  "stressIdrico": {
+    "anniGiovane": 3,
+    "diametroTroncoGiovaneCm": 10,
+    "pioggiaSignificativaMm": 5,
+    "pesi": { "ggSenzaPioggia": 4, "ggSenzaAcqua": 3, "gradiSopra25": 2 },
+    "fattoreEta": [1.0, 0.8, 0.6]
+  },
+  "annaffiature": { "intervalloMinOreCittadino": 12 },
+  "adozioni": { "maxAttivePerUtente": 5, "sogliaAvviso": 70, "intervalloAvvisiOre": 24 },
+  "meteo": { "intervalloAggiornamentoOre": 3, "avvisoDatiVecchiOre": 6 }
+}

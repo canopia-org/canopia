@@ -3,14 +3,14 @@
 **Progetto:** Canopia – gemello digitale della copertura arborea di Trento: benefici ecosistemici, irrigazione mirata e percorsi all'ombra
 **Corso:** Ingegneria del Software, A.A. 2026-27 – Prof. Paolo Giorgini
 **Gruppo:** [Nome 1 (team leader)], [Nome 2], [Nome 3]
-**Versione:** 0.1 (bozza) – 02/11/2026
+**Versione:** 0.2 (bozza) – 03/11/2026
 
 ---
 
 | Document Info | |
 |---|---|
 | Doc. Name | D3-CanopiaTechnicalPlan |
-| Doc. Number | D3 V0.1 |
+| Doc. Number | D3 V0.2 |
 | Description | Piano tecnico (architettura, dati, API), scomposizione in task e sprint, strategia di implementazione e di test, traceability da AC del D2 a test |
 | Input | D1 V0.3, D2 V0.1 |
 
@@ -37,8 +37,8 @@ Sorgente: [diagrammi/d3-architettura.puml](diagrammi/d3-architettura.puml)
 
 | ID | Componente | Responsabilità | Tecnologia |
 |---|---|---|---|
-| C-01 | Web app cittadino e back-office | Interfaccia SPA responsive (mobile per cittadino, desktop per back-office), mappa, chiamate API | Vue 3 + Vite, Vue Router, Pinia, MapLibre GL JS |
-| C-02 | API REST | Endpoint `/api/v1`, validazione, autenticazione e autorizzazione | Node.js 20 LTS, Express 4, express-openapi-validator |
+| C-01 | Web app cittadino e back-office | Interfaccia SPA responsive (mobile per cittadino, desktop per back-office), mappa, chiamate API | Vue 3 + Vite 8, Vue Router, Pinia, MapLibre GL JS; MSW per simulare l'API [framework: ADR-14] |
+| C-02 | API REST | Endpoint `/api/v1`, validazione, autenticazione e autorizzazione | Node.js 24 LTS, Express 5 in moduli ESM, express-openapi-validator, argon2 |
 | C-03 | Modulo ombra | Posizione del sole, proiezione delle chiome, frazione d'ombra per tratto (BR1, BR2, BR10) | suncalc, @turf/turf |
 | C-04 | Modulo percorsi | Grafo della rete pedonale/ciclabile, cammino minimo con costo ombra (BR3, BR8, BR9) | ngraph.graph + ngraph.path (A*) |
 | C-05 | Modulo stime | Benefici ecosistemici (BR4, BR16), indice di stress idrico (BR5, BR11, BR12), punteggio aree candidate | JavaScript puro, parametri in configurazione |
@@ -46,8 +46,8 @@ Sorgente: [diagrammi/d3-architettura.puml](diagrammi/d3-architettura.puml)
 | C-07 | Job pianificati | Aggiornamento meteo, censimento, ricalcolo indici, avvisi adozioni (F09, F11) | node-cron in processo worker separato |
 | C-08 | Importatori | Lettura e validazione delle fonti (WMS Comune, Meteotrentino/meteo.report, Overpass OSM, dati.trentino) | axios, script `scripts/` |
 | C-09 | Database | Persistenza, query geospaziali | MongoDB Atlas (cluster M0/M10), Mongoose |
-| C-10 | Archivio file | Foto delle segnalazioni oscurate | [Cloudinary o storage S3-compatibile – ADR-07] |
-| C-11 | Email | Conferma registrazione | [Brevo/Resend piano gratuito – ADR-08] |
+| C-10 | Archivio file | Foto delle segnalazioni oscurate | Storage S3-compatibile gestito (es. Cloudflare R2) tramite client S3 [fornitore da scegliere] |
+| C-11 | Email | Conferma registrazione | nodemailer su un servizio SMTP gratuito [fornitore da scegliere] (ADR-15) |
 
 ### 1.2 Decisioni architetturali
 
@@ -62,13 +62,20 @@ Sorgente: [diagrammi/d3-architettura.puml](diagrammi/d3-architettura.puml)
 | ADR-07 | Foto oscurate prima del salvataggio, originali mai salvati | RNF9 privacy by design | Oscuramento a posteriori |
 | ADR-08 | Avvisi delle adozioni in-app nel MVP | GAP9 aperto; nessun costo di invio | Push/email: rinviati |
 | ADR-09 | Parametri delle formule (pesi, soglie `[ ]` del D2) in `config/parametri.json` versionato | Le soglie andranno validate col Comune senza modificare il codice | Costanti nel codice |
+| ADR-10 | Node.js 24 LTS | Node 20 è fuori supporto di sicurezza da aprile 2026; 24 è la LTS attiva fino al 2028 | Node 20 (fine supporto), Node 22 (supporto più breve) |
+| ADR-11 | Express 5 e moduli ESM nel backend | Express 5 inoltra al gestore degli errori anche le eccezioni delle funzioni async, senza try/catch in ogni rotta; ESM è il formato standard di Node e lo stesso del frontend | Express 4 + CommonJS (usati da EasyLib): più codice ripetitivo |
+| ADR-12 | Password con argon2id | Algoritmo raccomandato per primo da OWASP (Password Storage Cheat Sheet); resistente agli attacchi con GPU | bcrypt: valido ma di generazione precedente e limitato a 72 byte |
+| ADR-13 | Controlli automatici di qualità: husky + lint-staged prima di ogni commit; script `openapi:routes` in CI che confronta le rotte Express con `api/openapi.yaml` | Il codice non formattato non arriva in CI; ogni rotta implementata è documentata, quindi la traceability endpoint → AC del D2 resta valida | Solo revisione manuale |
+| ADR-14 | **Decisione aperta:** framework frontend. Default attuale Vue 3 (come il laboratorio, EasyLib). Alternativa: React 19, che il gruppo usa già in un altro progetto | Vue: allineato agli esempi del corso. React: esperienza del gruppo ed ecosistema più ampio. MapLibre funziona con entrambi; nessuna libreria di componenti pesante (MUI) perché i mockup hanno uno stile proprio | [Da confermare con il docente entro l'inizio di T-07] |
+| ADR-15 | Email con nodemailer su SMTP | Indipendente dal fornitore: si cambia servizio modificando solo le variabili d'ambiente | SDK proprietari dei servizi email |
+| ADR-16 | **Decisione aperta:** test runner del backend. Default attuale Jest, indicato dal corso (D1, V1). Vitest, già usato nel frontend, sarebbe più veloce e nativo ESM | Un unico strumento per backend e frontend; Jest con ESM richiede `--experimental-vm-modules` | [Da confermare con il docente; l'API di test è quasi identica, il cambio costa poco] |
 
 ### 1.3 Deploy
 
 | Ambiente | Frontend | Backend | DB |
 |---|---|---|---|
-| Locale | `vite dev` | `node` + nodemon | MongoDB in Docker o `mongodb-memory-server` per i test |
-| Sviluppo/demo | GitHub Pages | render.com Web Service (free) + Background Worker per C-07 | MongoDB Atlas M0 |
+| Locale | `npm run dev -w frontend` (o `dev:mock` con API simulate) | `npm run dev -w backend` (`node --watch`) | `docker compose up -d` (MongoDB 8) o `mongodb-memory-server` per i test |
+| Sviluppo/demo | GitHub Pages | render.com Web Service (free) + Cron Job per C-07 (i Background Worker non sono nel piano gratuito) | MongoDB Atlas M0 |
 | Produzione (ipotesi per il Comune) | CDN | render.com o infrastruttura del Comune | Atlas M10 o istanza del Comune |
 
 Segreti (`JWT_SECRET`, `MONGODB_URI`, chiave AI, chiave email) solo come variabili d'ambiente, mai nel repository.
@@ -89,7 +96,7 @@ Traduzione del modello del dominio del D2 (sez. 2.1) in collezioni MongoDB. Le r
 | `meteo` | istante, tipo, temperatura, umidita, pioggia, fonte, stazione | `{tipo, istante}` |
 | `segnalazioni` | autoreId, testo, foto[], posizione, alberoId, categoria, priorita, proposta {categoria, priorita, alberoId, confidenza}, confermata, stato, collegataA, storicoStati[] | `posizione` 2dsphere, `{alberoId, categoria, stato}` |
 | `scenari` | pianificatoreId, nome, area (Polygon), alberiVirtuali[], alberiRimossi[], risultati, creatoIl | `pianificatoreId` |
-| `utenti` | email, hashPassword (bcrypt, costo 12), nome, cognome, ruolo, stato, tokenConferma | `email` unico |
+| `utenti` | email, hashPassword (argon2id, ADR-12), nome, cognome, ruolo, stato, tokenConferma | `email` unico |
 | `adozioni` | utenteId, alberoId, dataInizio, attiva, ultimoAvviso | `{utenteId, attiva}`, `{alberoId, attiva}` |
 | `notifiche` | utenteId, tipo, testo, letta, creataIl | `{utenteId, letta}` |
 | `snapshotBenefici` | area, anno, indicatori, modelloVersione | `{area, anno}` unico |
@@ -148,15 +155,21 @@ canopia/
 │   │   └── jobs/
 │   └── test/
 │       ├── unit/               # servizi puri (ombra, stime, BR)
-│       ├── api/                # supertest + mongodb-memory-server
+│       ├── integration/        # endpoint con supertest + mongodb-memory-server
 │       └── fixtures/           # dati di prova (quartiere campione)
 ├── frontend/
-│   ├── src/ (views/, components/, stores/, api/)
-│   └── test/                   # Vitest + Vue Test Utils
+│   ├── src/ (views/, components/, stores/, api/, router/, mocks/)   # mocks/: handler MSW
+│   ├── public/mockServiceWorker.js
+│   └── test/                   # Vitest + Vue Test Utils + MSW
 ├── e2e/                        # Playwright: percorsi utente principali
 ├── api/openapi.yaml
 ├── docs/                       # D1–D4, diagrammi
-└── .github/workflows/ci.yml
+├── scripts/                    # build-pdf, scarica_alberi, check-openapi-routes
+├── .github/workflows/          # ci.yml, pages.yml
+├── .husky/pre-commit           # lint-staged
+├── docker-compose.yml          # MongoDB per lo sviluppo locale
+├── render.yaml                 # deploy API e job
+└── package.json                # npm workspaces (backend, frontend), ESLint, Prettier
 ```
 
 ---
@@ -221,9 +234,9 @@ Gestione su GitHub: una Issue per task (etichette `Fxx`, `sprint-n`), una Pull R
 ### 6.1 Livelli
 | Livello | Strumento | Cosa verifica | Soglia |
 |---|---|---|---|
-| Unit | Jest | Moduli puri: ombra, percorsi, stime, indice, punteggio, transizioni di stato, validazione output AI | copertura righe ≥ 80 % su `services/` |
-| API / integrazione | Jest + supertest + mongodb-memory-server | Ogni endpoint: codici di stato, autorizzazioni, business rule, AC del D2 | tutti i TEST-Fxx-yy di tipo API verdi |
-| Frontend | Vitest + Vue Test Utils | Componenti principali (form percorso, scheda, chip filtri) | — |
+| Unit | Jest [ADR-16] | Moduli puri: ombra, percorsi, stime, indice, punteggio, transizioni di stato, validazione output AI | copertura righe ≥ 80 % su `services/` |
+| Integrazione | Jest + supertest + mongodb-memory-server [ADR-16] | Ogni endpoint: codici di stato, autorizzazioni, business rule, AC del D2 | tutti i TEST-Fxx-yy di tipo API verdi |
+| Frontend | Vitest 4 + Vue Test Utils + MSW (API simulate con risposte conformi all'OpenAPI) | Componenti principali (form percorso, scheda, chip filtri) | — |
 | End-to-end | Playwright | 4 flussi del D1 (cittadino percorso, cittadino segnalazione, tecnico irrigazione, pianificatore scenario) | verdi su Chrome e Safari mobile emulato |
 | Prestazioni | k6 | RNF3 con [100] utenti virtuali | p95 percorso ≤ [3] s, scenario ≤ [10] s |
 | Accessibilità | @axe-core/playwright | RNF10, WCAG 2.1 AA | 0 violazioni serie/critiche |
@@ -263,10 +276,13 @@ Ogni `AC-Fxx-yy` del D2 ha il test omonimo `TEST-Fxx-yy`. Tipo: U = unit, A = AP
 | TEST-RNF3-01/02 | p95 percorso e scenario sotto soglia con 100 VU | P | T-22 |
 | TEST-RNF10-01 | 0 violazioni axe serie | E | T-23 |
 
-Esempio di test (stile del corso, Jest + supertest):
+Esempio di test (Jest + supertest, moduli ESM):
 
 ```js
-// backend/test/api/percorsi.test.js
+// backend/test/integration/percorsi.test.js
+import request from 'supertest';
+import app from '../../src/app.js';
+
 // TEST-F01-02 – AC-F01-02: il percorso fresco non supera la tolleranza
 test('TEST-F01-02 percorso fresco entro la tolleranza del 20 %', async () => {
   const res = await request(app).post('/api/v1/percorsi').send({
@@ -285,8 +301,8 @@ test('TEST-F01-02 percorso fresco entro la tolleranza del 20 %', async () => {
 ### 6.3 Integrazione continua
 
 `.github/workflows/ci.yml` a ogni Pull Request e push su `main`:
-1. installazione dipendenze, lint (ESLint) e formattazione (Prettier);
-2. validazione di `api/openapi.yaml` (Redocly);
+1. installazione dipendenze, lint (ESLint) e formattazione (Prettier), già controllati in locale prima di ogni commit da husky + lint-staged;
+2. validazione di `api/openapi.yaml` (Redocly) e confronto tra rotte implementate e specifica (`npm run openapi:routes`, ADR-13);
 3. test unit e API con report di copertura (fallisce sotto l'80 % su `services/`);
 4. build del frontend e test Vitest;
 5. su `main`: test e2e Playwright contro il deploy di sviluppo, poi deploy automatico (render deploy hook + GitHub Pages).
@@ -347,4 +363,4 @@ Repository: [URL GitHub] · API di sviluppo: [URL render] · Frontend: [URL Page
 
 | ID | Tipo | Descrizione | Origine | Artefatti impattati | GitHub / Stato |
 |---|---|---|---|---|---|
-| CH-__ | [Tech change / Spec change] | [...] | [Review / team] | [D2, D3, codice, test] | [#issue / #PR — OPEN] |
+| CH-01 | Tech change | Node 24, Express 5 ESM, argon2id, nodemailer, husky + lint-staged, controllo rotte/OpenAPI, MSW, Vite 8 / Vitest 4, docker-compose per MongoDB; aperte le decisioni ADR-14 (Vue/React) e ADR-16 (Jest/Vitest) | Confronto con lo stack di un altro progetto del gruppo | D3 sez. 1, 2, 4, 6; T-01, T-05 | #1 / #8 — OPEN |

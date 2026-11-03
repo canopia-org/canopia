@@ -1,0 +1,6 @@
+docs/
+data/
+coverage/
+dist/
+package-lock.json
+frontend/public/mockServiceWorker.js
