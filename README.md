@@ -27,7 +27,7 @@ canopia/
 
 ## Sviluppo
 
-Requisiti: Node.js 20 (vedi `.nvmrc`), MongoDB locale o una stringa di connessione Atlas.
+Requisiti: Node.js 24 (vedi `.nvmrc`), Docker per MongoDB locale (`docker compose up -d`) oppure una stringa di connessione MongoDB Atlas.
 
 ```bash
 npm install
@@ -47,7 +47,13 @@ npm run dev -w frontend
 
 L'API risponde su `http://localhost:3000/api/v1/health`, il frontend su `http://localhost:5173`.
 
-Controlli eseguiti anche dalla CI a ogni Pull Request:
+Frontend con API simulate (MSW), senza backend:
+
+```bash
+npm run dev:mock -w frontend
+```
+
+Prima di ogni commit husky esegue lint-staged (ESLint e Prettier sui file modificati). Controlli eseguiti anche dalla CI a ogni Pull Request:
 
 ```bash
 npm run lint
@@ -59,6 +65,10 @@ npm test
 
 ```bash
 npm run openapi:lint
+```
+
+```bash
+npm run openapi:routes
 ```
 
 ## Deploy

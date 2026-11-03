@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const config = require('./config');
-const health = require('./routes/health');
-const { notFound, errorHandler } = require('./middleware/errors');
+import express from 'express';
+import cors from 'cors';
+import config from './config/index.js';
+import health from './routes/health.js';
+import { notFound, errorHandler } from './middleware/errors.js';
 
 const app = express();
 
@@ -14,4 +14,4 @@ app.use('/api/v1/health', health);
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

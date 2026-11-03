@@ -21,6 +21,8 @@ jobs:
           npm run format:check
       - name: Validazione OpenAPI
         run: npm run openapi:lint
+      - name: Coerenza tra rotte e OpenAPI
+        run: npm run openapi:routes
       - name: Test backend (con copertura)
         run: npm test -w backend
       - name: Test frontend

@@ -10,10 +10,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm test --workspaces",
-    "openapi:lint": "redocly lint api/openapi.yaml"
+    "openapi:lint": "redocly lint api/openapi.yaml",
+    "openapi:routes": "node scripts/check-openapi-routes.mjs",
+    "prepare": "husky"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -22,6 +24,17 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.32.0",
     "globals": "^15.14.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0"
+  },
+  "lint-staged": {
+    "*.{js,mjs,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yaml,yml,md,css,html}": [
+      "prettier --write"
+    ]
   }
 }

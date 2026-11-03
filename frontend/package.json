@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:mock": "vite --mode mock"
   },
   "dependencies": {
     "pinia": "^2.3.0",
@@ -15,10 +16,11 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.0",
     "@vue/test-utils": "^2.4.6",
-    "jsdom": "^25.0.1",
-    "vite": "^6.0.7",
-    "vitest": "^2.1.8"
+    "jsdom": "^29.1.1",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.10",
+    "msw": "^2.15.0"
   }
 }

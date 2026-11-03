@@ -4,7 +4,16 @@ import vue from 'eslint-plugin-vue';
 import prettier from 'eslint-config-prettier';
 
 export default [
-  { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**', 'docs/**', 'data/**'] },
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/coverage/**',
+      'docs/**',
+      'data/**',
+      'frontend/public/mockServiceWorker.js',
+    ],
+  },
   js.configs.recommended,
   {
     files: ['backend/**/*.js'],
@@ -16,7 +25,7 @@ export default [
     languageOptions: { globals: { ...globals.browser } },
   },
   {
-    files: ['frontend/vite.config.js', 'eslint.config.mjs'],
+    files: ['frontend/vite.config.js', 'eslint.config.mjs', 'scripts/**/*.mjs'],
     languageOptions: { globals: { ...globals.node } },
   },
   prettier,

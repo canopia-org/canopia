@@ -11,7 +11,7 @@ services:
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_VERSION
-        value: '20'
+        value: '24'
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
@@ -26,6 +26,6 @@ services:
     startCommand: npm run worker -w backend
     envVars:
       - key: NODE_VERSION
-        value: '20'
+        value: '24'
       - key: MONGODB_URI
         sync: false
